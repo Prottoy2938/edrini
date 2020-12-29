@@ -60,10 +60,39 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         });
 
       const trackData: any = doc.data();
+      const relatedTracksData = [];
+
+      const relatedTracksSnapShots = await db
+        .collection("trackData")
+        .where("spotifyData.id", "!=", trackId)
+        .where("spotifyData.album.id", "==", trackData.spotifyData.album.id)
+        .orderBy("pageViews.totalViews", "desc")
+        .limit(3)
+        .get();
+
+      relatedTracksSnapShots.forEach(function (doc) {
+        relatedTracksData.push(JSON.stringify(doc.data()));
+      });
+
+      //if theres less than 3 tracks returned from the first query(currently it's from the album)
+      if (relatedTracksData.length < 3) {
+        const moreRTSnapShots = await db
+          .collection("trackData")
+          .where("spotifyData.id", "!=", trackId)
+          .where("spotifyData.artists", "array-contains-any", trackData.artists)
+          .orderBy("pageViews.totalViews", "desc")
+          .limit(3 - relatedTracksData.length)
+          .get();
+        moreRTSnapShots.forEach(function (doc) {
+          relatedTracksData.push(JSON.stringify(doc.data()));
+        });
+      }
+
       //* *  successful data return
       return {
         props: {
           trackData: JSON.stringify(trackData),
+          relatedTracksData: relatedTracksData,
         },
       };
     } else {
@@ -77,7 +106,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           spotifyApi.setAccessToken(token);
           spotifyApi
             .getTrack(trackId)
-            .then((res) => {
+            .then(async (res) => {
+              //adding the track in the database
               db.collection("trackData")
                 .doc(trackId)
                 .set({
@@ -95,10 +125,47 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 });
 
               const trackData: any = doc.data();
+              const relatedTracksData = [];
+
+              const relatedTracksSnapShots = await db
+                .collection("trackData")
+                .where("spotifyData.id", "!=", trackId)
+                .where(
+                  "spotifyData.album.id",
+                  "==",
+                  trackData.spotifyData.album.id
+                )
+                .orderBy("pageViews.totalViews", "desc")
+                .limit(3)
+                .get();
+
+              relatedTracksSnapShots.forEach(function (doc) {
+                relatedTracksData.push(JSON.stringify(doc.data()));
+              });
+
+              //if theres less than 3 tracks returned from the first query(currently it's from the album)
+              if (relatedTracksData.length < 3) {
+                const moreRTSnapShots = await db
+                  .collection("trackData")
+                  .where("spotifyData.id", "!=", trackId)
+                  .where(
+                    "spotifyData.artists",
+                    "array-contains-any",
+                    trackData.artists
+                  )
+                  .orderBy("pageViews.totalViews", "desc")
+                  .limit(3 - relatedTracksData.length)
+                  .get();
+                moreRTSnapShots.forEach(function (doc) {
+                  relatedTracksData.push(JSON.stringify(doc.data()));
+                });
+              }
+
               //* *  successful data return
               return {
                 props: {
                   trackData: JSON.stringify(trackData),
+                  relatedTracksData: relatedTracksData,
                 },
               };
             })
