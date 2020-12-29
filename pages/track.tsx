@@ -222,7 +222,7 @@ const Home: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   return (
     <>
       <NextSeo
-        title="Edrini"
+        title="Some title"
         description="A Web Platform Where You Can Rate Music"
       />
       <Box bg="black" w="100vw" height="100vh">
