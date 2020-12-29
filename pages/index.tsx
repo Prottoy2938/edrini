@@ -33,7 +33,15 @@ const Home: React.FC = () => {
                 <InputRightElement pointerEvents="none">
                   <SearchIcon color="gray.300" />
                 </InputRightElement>
-                <Input autoFocus variant="filled" placeholder="search" />
+                <Input
+                  bg="rgba(255, 255, 255, 0.07)"
+                  autoFocus
+                  variant="filled"
+                  placeholder="search"
+                  _hover={{
+                    background: "rgba(255, 255, 255, 0.09)",
+                  }}
+                />
               </InputGroup>
             </DarkMode>
           </Box>
