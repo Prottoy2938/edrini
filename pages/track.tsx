@@ -21,7 +21,7 @@ const clientSecret = "10900f2434c34c7a9622514eb846778a";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { query } = context;
 
-  const { id: trackId } = query;
+  const { i: trackId } = query;
 
   if (typeof trackId === "string") {
     const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
@@ -66,6 +66,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         .collection("trackData")
         .where("spotifyData.id", "!=", trackId)
         .where("spotifyData.album.id", "==", trackData.spotifyData.album.id)
+        .orderBy("spotifyData.id", "desc")
         .orderBy("pageViews.totalViews", "desc")
         .limit(3)
         .get();
@@ -79,7 +80,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         const moreRTSnapShots = await db
           .collection("trackData")
           .where("spotifyData.id", "!=", trackId)
-          .where("spotifyData.artists", "array-contains-any", trackData.artists)
+          .where(
+            "spotifyData.artists",
+            "array-contains-any",
+            trackData.spotifyData.artists
+          )
+          .orderBy("spotifyData.id", "desc")
           .orderBy("pageViews.totalViews", "desc")
           .limit(3 - relatedTracksData.length)
           .get();
@@ -135,6 +141,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                   "==",
                   trackData.spotifyData.album.id
                 )
+                .orderBy("spotifyData.id", "desc")
                 .orderBy("pageViews.totalViews", "desc")
                 .limit(3)
                 .get();
@@ -151,7 +158,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                   .where(
                     "spotifyData.artists",
                     "array-contains-any",
-                    trackData.artists
+                    trackData.spotifyData.artists
                   )
                   .orderBy("pageViews.totalViews", "desc")
                   .limit(3 - relatedTracksData.length)
