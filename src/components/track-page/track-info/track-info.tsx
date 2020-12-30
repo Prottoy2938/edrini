@@ -4,6 +4,7 @@ import Props from "./track-info.model";
 import { isMobile, isTablet } from "react-device-detect";
 import { v4 as uuid } from "uuid";
 import millisToMinutesAndSeconds from "../../../helper-functions/helper-function";
+import RatingSection from "../rating-section/rating-section";
 
 const TrackInfo: React.FC<Props> = (props: Props) => {
   const { trackData } = props;
@@ -56,7 +57,7 @@ const TrackInfo: React.FC<Props> = (props: Props) => {
             </chakra.a>
           ))}
         </Heading>
-
+        <RatingSection />
         <Box mt={10}>
           <Stack spacing={4}>
             <Stack isInline spacing={5}>
