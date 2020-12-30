@@ -14,14 +14,17 @@ import * as admin from "firebase-admin";
 import getWeekNumber from "../src/helper-functions/get-week-numbers";
 import SpotifyWebApi from "spotify-web-api-node";
 import getToken from "../src/helper-functions/get-token-spotify";
-
-const clientId = "37568751af9a4a4f912216aacb75a695";
-const clientSecret = "10900f2434c34c7a9622514eb846778a";
+import TrackDataProps from "../src/data-model/track-data.db";
+import TrackInfo from "../src/components/track-page/track-info/track-info";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { query } = context;
 
   const { i: trackId } = query;
+
+  //spotify info
+  const clientId = "37568751af9a4a4f912216aacb75a695";
+  const clientSecret = "10900f2434c34c7a9622514eb846778a";
 
   if (typeof trackId === "string") {
     const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
@@ -214,46 +217,29 @@ interface PropTypes {
     errorCode: number;
     errorMsg: string;
   };
+  trackData: string;
+  relatedTracksData: string[];
 }
 
 const Home: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   props: PropTypes
 ) => {
+  const trackData: TrackDataProps = JSON.parse(props.trackData);
+  const relatedTracksData: TrackDataProps[] = props.relatedTracksData.map(
+    (track) => {
+      return JSON.parse(track);
+    }
+  );
+
+  console.log(trackData);
   return (
     <>
       <NextSeo
         title="Some title"
         description="A Web Platform Where You Can Rate Music"
       />
-      <Box bg="black" w="100vw" height="100vh">
-        <Box d="table" m="0 auto" pt="100px">
-          <Box>
-            <Heading textAlign="center" size="3xl">
-              Edrini
-            </Heading>
-            <Heading textAlign="center" as="h3" mt={10} fontSize="3xl">
-              A Web Platform Where You Can Rate Music
-            </Heading>
-          </Box>
-          <Box mt={16}>
-            <DarkMode>
-              <InputGroup size="lg" w="800px">
-                <InputRightElement pointerEvents="none">
-                  <SearchIcon color="gray.300" />
-                </InputRightElement>
-                <Input
-                  bg="rgba(255, 255, 255, 0.07)"
-                  autoFocus
-                  variant="filled"
-                  placeholder="search"
-                  _hover={{
-                    background: "rgba(255, 255, 255, 0.09)",
-                  }}
-                />
-              </InputGroup>
-            </DarkMode>
-          </Box>
-        </Box>
+      <Box>
+        <TrackInfo trackData={trackData} />
       </Box>
     </>
   );

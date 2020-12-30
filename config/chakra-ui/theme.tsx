@@ -1,15 +1,15 @@
 import { theme } from "@chakra-ui/react";
-// import { mode } from "@chakra-ui/theme-tools";
+import { mode } from "@chakra-ui/theme-tools";
 const customTheme = {
   ...theme,
-  // styles: {
-  //   global: (props) => ({
-  //     body: {
-  //       bg: mode("white", "black")(props),
-  //       color: mode("black", "#E2E8F0")(props),
-  //     },
-  //   }),
-  // },
+  styles: {
+    global: (props) => ({
+      body: {
+        bg: mode("white", "black")(props),
+        color: mode("black", "#E2E8F0")(props),
+      },
+    }),
+  },
   colors: {
     ...theme.colors,
     primary: {

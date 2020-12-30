@@ -14,7 +14,7 @@ class MyDocument extends Document {
         <Head>
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
         </Head>
-        <body>
+        <body style={{ background: "black" }}>
           <ColorModeScript initialColorMode="dark" />
           <Main />
           <NextScript />

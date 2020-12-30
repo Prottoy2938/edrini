@@ -17,7 +17,7 @@ const Home: React.FC = () => {
         title="Edrini"
         description="A Web Platform Where You Can Rate Music"
       />
-      <Box bg="black" w="100vw" height="100vh">
+      <Box w="100vw" height="100vh">
         <Box d="table" m="0 auto" pt="100px">
           <Box>
             <Heading textAlign="center" size="3xl">
