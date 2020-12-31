@@ -1,3 +1,15 @@
 div .rc-slider-rail {
   background: rgba(233, 233, 233, 0.7);
 }
+
+div.r-3 .rc-slider-track {
+  background-color: #559945;
+}
+
+div.r-8 .rc-slider-track {
+  background-color: #ffa200;
+}
+
+div.r-10 .rc-slider-track {
+  background-color: #ff006f;
+}

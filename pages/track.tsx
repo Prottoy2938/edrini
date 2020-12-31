@@ -1,21 +1,13 @@
 import React from "react";
 import { NextSeo } from "next-seo";
-import {
-  Input,
-  Box,
-  Heading,
-  InputGroup,
-  InputRightElement,
-  DarkMode,
-} from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
+import { Box } from "@chakra-ui/react";
 import { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import * as admin from "firebase-admin";
 import getWeekNumber from "../src/helper-functions/get-week-numbers";
 import SpotifyWebApi from "spotify-web-api-node";
 import getToken from "../src/helper-functions/get-token-spotify";
 import TrackDataProps from "../src/data-model/track-data.db";
-import TrackInfo from "../src/components/track-page/track-info/track-info";
+import TrackPageAssemble from "../src/components/track-page/track-page-assemble/track-page-assemble";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { query } = context;
@@ -239,7 +231,7 @@ const Home: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
         description="A Web Platform Where You Can Rate Music"
       />
       <Box>
-        <TrackInfo trackData={trackData} />
+        <TrackPageAssemble trackData={trackData} />
       </Box>
     </>
   );
