@@ -9,13 +9,14 @@ import RatingSection from "../rating-section/rating-section";
 const TrackPageAssemble: React.FC<Props> = (props: Props) => {
   const [userRating, setUserRating] = useState(4);
 
-  const { trackData } = props;
-  console.log(trackData);
+  const { trackData, relatedTracksData } = props;
   const lgImg = trackData.spotifyData.album.images[0].url;
   const mdImg = trackData.spotifyData.album.images[1].url;
   const smImg = trackData.spotifyData.album.images[2].url;
   const name = trackData.spotifyData.name;
   const artistNames = trackData.spotifyData.artists;
+
+  console.log(relatedTracksData);
 
   return (
     <Box

@@ -94,103 +94,95 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
           trackData: JSON.stringify(trackData),
           relatedTracksData: relatedTracksData,
+          error: false,
+          errorMsg: "",
+          errorCode: 0,
         },
       };
     } else {
-      getToken()
-        .then((token) => {
-          const spotifyApi = new SpotifyWebApi({
-            clientId,
-            clientSecret,
-            redirectUri: "http://www.example.com/callback",
-          });
-          spotifyApi.setAccessToken(token);
-          spotifyApi
-            .getTrack(trackId)
-            .then(async (res) => {
-              //adding the track in the database
-              db.collection("trackData")
-                .doc(trackId)
-                .set({
-                  spotifyData: res.body,
-                  pageViews: {
-                    totalViews: admin.firestore.FieldValue.increment(1),
-                    viewTime: {
-                      [currentYear]: {
-                        [currentWeekNum]: admin.firestore.FieldValue.increment(
-                          1
-                        ), //12 is the week counter of the year
-                      },
-                    },
-                  },
-                });
-
-              const trackData: any = doc.data();
-              const relatedTracksData = [];
-
-              const relatedTracksSnapShots = await db
-                .collection("trackData")
-                .where("spotifyData.id", "!=", trackId)
-                .where(
-                  "spotifyData.album.id",
-                  "==",
-                  trackData.spotifyData.album.id
-                )
-                .orderBy("spotifyData.id", "desc")
-                .orderBy("pageViews.totalViews", "desc")
-                .limit(3)
-                .get();
-
-              relatedTracksSnapShots.forEach(function (doc) {
-                relatedTracksData.push(JSON.stringify(doc.data()));
-              });
-
-              //if theres less than 3 tracks returned from the first query(currently it's from the album)
-              if (relatedTracksData.length < 3) {
-                const moreRTSnapShots = await db
-                  .collection("trackData")
-                  .where("spotifyData.id", "!=", trackId)
-                  .where(
-                    "spotifyData.artists",
-                    "array-contains-any",
-                    trackData.spotifyData.artists
-                  )
-                  .orderBy("pageViews.totalViews", "desc")
-                  .limit(3 - relatedTracksData.length)
-                  .get();
-                moreRTSnapShots.forEach(function (doc) {
-                  relatedTracksData.push(JSON.stringify(doc.data()));
-                });
-              }
-
-              //* *  successful data return
-              return {
-                props: {
-                  trackData: JSON.stringify(trackData),
-                  relatedTracksData: relatedTracksData,
-                },
-              };
-            })
-            .catch((e) => {
-              return {
-                props: {
-                  error: true,
-                  errorMsg: "No tracks found",
-                  errorCode: 404,
-                }, // will be passed to the page component as props
-              };
-            });
-        })
-        .catch(() => {
-          return {
-            props: {
-              error: true,
-              errorMsg:
-                "Something went wrong, if this problem consists, contact us",
-              errorCode: 403,
-            }, // will be passed to the page component as props
-          };
+      //START FROM HERE: =================================
+      try {
+        const token = await getToken();
+        const spotifyApi = new SpotifyWebApi({
+          clientId,
+          clientSecret,
+          redirectUri: "http://www.example.com/callback",
         });
+        spotifyApi.setAccessToken(token);
+
+        const res = await spotifyApi.getTrack(trackId);
+
+        //adding the track in the database
+        db.collection("trackData")
+          .doc(trackId)
+          .set({
+            spotifyData: res.body,
+            pageViews: {
+              totalViews: admin.firestore.FieldValue.increment(1),
+              viewTime: {
+                [currentYear]: {
+                  [currentWeekNum]: admin.firestore.FieldValue.increment(1), //12 is the week counter of the year
+                },
+              },
+            },
+          });
+
+        const trackData: any = doc.data();
+        const relatedTracksData = [];
+
+        const relatedTracksSnapShots = await db
+          .collection("trackData")
+          .where("spotifyData.id", "!=", trackId)
+          .where("spotifyData.album.id", "==", trackData.spotifyData.album.id)
+          .orderBy("spotifyData.id", "desc")
+          .orderBy("pageViews.totalViews", "desc")
+          .limit(3)
+          .get();
+
+        relatedTracksSnapShots.forEach(function (doc) {
+          relatedTracksData.push(JSON.stringify(doc.data()));
+        });
+
+        //if theres less than 3 tracks returned from the first query(currently it's from the album)
+        if (relatedTracksData.length < 3) {
+          const moreRTSnapShots = await db
+            .collection("trackData")
+            .where("spotifyData.id", "!=", trackId)
+            .where(
+              "spotifyData.artists",
+              "array-contains-any",
+              trackData.spotifyData.artists
+            )
+            .orderBy("pageViews.totalViews", "desc")
+            .limit(3 - relatedTracksData.length)
+            .get();
+          moreRTSnapShots.forEach(function (doc) {
+            relatedTracksData.push(JSON.stringify(doc.data()));
+          });
+        }
+
+        //* *  successful data return
+        return {
+          props: {
+            trackData: JSON.stringify(trackData),
+            relatedTracksData: relatedTracksData,
+            error: false,
+            errorMsg: "",
+            errorCode: 0,
+          },
+        };
+      } catch (e) {
+        console.log("Error here");
+        return {
+          props: {
+            error: {
+              error: true,
+              errorMsg: "No tracks found",
+              errorCode: 404,
+            },
+          },
+        };
+      }
     }
   } else {
     return {
@@ -216,25 +208,33 @@ interface PropTypes {
 const Home: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   props: PropTypes
 ) => {
-  const trackData: TrackDataProps = JSON.parse(props.trackData);
-  const relatedTracksData: TrackDataProps[] = props.relatedTracksData.map(
-    (track) => {
-      return JSON.parse(track);
-    }
-  );
-
-  console.log(trackData);
-  return (
-    <>
-      <NextSeo
-        title="Some title"
-        description="A Web Platform Where You Can Rate Music"
-      />
-      <Box>
-        <TrackPageAssemble trackData={trackData} />
-      </Box>
-    </>
-  );
+  const {
+    error: { errorMsg, error },
+  } = props;
+  if (error) {
+    return <h1>{errorMsg}</h1>;
+  } else {
+    const trackData: TrackDataProps = JSON.parse(props.trackData);
+    const relatedTracksData: TrackDataProps[] = props.relatedTracksData.map(
+      (track) => {
+        return JSON.parse(track);
+      }
+    );
+    return (
+      <>
+        <NextSeo
+          title="Some title"
+          description="A Web Platform Where You Can Rate Music"
+        />
+        <Box>
+          <TrackPageAssemble
+            trackData={trackData}
+            relatedTracksData={relatedTracksData}
+          />
+        </Box>
+      </>
+    );
+  }
 };
 
 export default Home;
