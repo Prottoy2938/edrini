@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         });
 
-      const trackData: any = doc.data();
+      const trackData = doc.data();
       const relatedTracksData = [];
 
       const relatedTracksSnapShots = await db
@@ -62,7 +62,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         .where("spotifyData.id", "!=", trackId)
         .where("spotifyData.album.id", "==", trackData.spotifyData.album.id)
         .orderBy("spotifyData.id", "desc")
-        .orderBy("pageViews.totalViews", "desc")
+        // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
+        // .orderBy("pageViews.totalViews", "desc")
         .limit(3)
         .get();
 
@@ -72,21 +73,73 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
       //if theres less than 3 tracks returned from the first query(currently it's from the album)
       if (relatedTracksData.length < 3) {
+        console.log("I'm running here");
         const moreRTSnapShots = await db
           .collection("trackData")
           .where("spotifyData.id", "!=", trackId)
-          .where(
-            "spotifyData.artists",
-            "array-contains-any",
-            trackData.spotifyData.artists
-          )
+          .where("spotifyData.artists", "array-contains-any", [
+            ...trackData.spotifyData.artists,
+          ])
           .orderBy("spotifyData.id", "desc")
-          .orderBy("pageViews.totalViews", "desc")
-          .limit(3 - relatedTracksData.length)
+          // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
+          // .orderBy("pageViews.totalViews",'desc')
+          .limit(3)
           .get();
+        console.log("before");
         moreRTSnapShots.forEach(function (doc) {
+          console.log("query successful data test");
           relatedTracksData.push(JSON.stringify(doc.data()));
         });
+      }
+
+      //TODO: Do the same in the next return, remember we do two returns here
+      //if we get nothing out of the database, then calling the spotify api to get related artist data
+      if (relatedTracksData.length < 3) {
+        try {
+          const token = await getToken();
+          const spotifyApi = new SpotifyWebApi({
+            clientId,
+            clientSecret,
+            redirectUri: "http://www.example.com/callback",
+          });
+          spotifyApi.setAccessToken(token);
+
+          //getting artist's top tracks on 'GB' / England
+          const res = await spotifyApi.getArtistTopTracks(
+            trackData.spotifyData.artists[0].id,
+            "GB"
+          );
+
+          const modifiedTracks = res.body.tracks.map((track) => {
+            //changing date format of the tracks release date
+            track.album.release_date = admin.firestore.Timestamp.fromDate(
+              new Date(track.album.release_date)
+            );
+            return track;
+          });
+
+          for (let i = 0; i < 3; i++) {
+            relatedTracksData.push(JSON.stringify(modifiedTracks[i]));
+          }
+
+          //adding these tracks on the db
+          modifiedTracks.map((track) => {
+            db.collection("trackData")
+              .doc(track.id)
+              .set({ spotifyData: track });
+          });
+        } catch (e) {
+          console.log(e);
+          return {
+            props: {
+              error: {
+                error: true,
+                errorMsg: "No tracks found",
+                errorCode: 404,
+              },
+            },
+          };
+        }
       }
 
       //* *  successful data return
@@ -100,7 +153,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       };
     } else {
-      //START FROM HERE: =================================
       try {
         const token = await getToken();
         const spotifyApi = new SpotifyWebApi({
@@ -135,7 +187,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           .where("spotifyData.id", "!=", trackId)
           .where("spotifyData.album.id", "==", trackData.spotifyData.album.id)
           .orderBy("spotifyData.id", "desc")
-          .orderBy("pageViews.totalViews", "desc")
+          // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
+          // .orderBy("pageViews.totalViews", "desc")
           .limit(3)
           .get();
 
@@ -153,12 +206,62 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
               "array-contains-any",
               trackData.spotifyData.artists
             )
-            .orderBy("pageViews.totalViews", "desc")
+            // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
+            // .orderBy("pageViews.totalViews", "desc")
             .limit(3 - relatedTracksData.length)
             .get();
           moreRTSnapShots.forEach(function (doc) {
             relatedTracksData.push(JSON.stringify(doc.data()));
           });
+        }
+
+        //if we get nothing out of the database, then calling the spotify api to get related artist data
+        if (relatedTracksData.length < 3) {
+          try {
+            const token = await getToken();
+            const spotifyApi = new SpotifyWebApi({
+              clientId,
+              clientSecret,
+              redirectUri: "http://www.example.com/callback",
+            });
+            spotifyApi.setAccessToken(token);
+
+            //getting artist's top tracks on 'GB' / England
+            const res = await spotifyApi.getArtistTopTracks(
+              trackData.spotifyData.artists[0].id,
+              "GB"
+            );
+
+            const modifiedTracks = res.body.tracks.map((track) => {
+              //changing date format of the tracks release date
+              track.album.release_date = admin.firestore.Timestamp.fromDate(
+                new Date(track.album.release_date)
+              );
+              return track;
+            });
+
+            for (let i = 0; i < 3; i++) {
+              relatedTracksData.push(JSON.stringify(modifiedTracks[i]));
+            }
+
+            //adding these tracks on the db
+            modifiedTracks.map((track) => {
+              db.collection("trackData")
+                .doc(track.id)
+                .set({ spotifyData: track });
+            });
+          } catch (e) {
+            console.log(e);
+            return {
+              props: {
+                error: {
+                  error: true,
+                  errorMsg: "No tracks found",
+                  errorCode: 404,
+                },
+              },
+            };
+          }
         }
 
         //* *  successful data return
@@ -172,7 +275,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       } catch (e) {
-        console.log("Error here");
+        console.log(e);
         return {
           props: {
             error: {

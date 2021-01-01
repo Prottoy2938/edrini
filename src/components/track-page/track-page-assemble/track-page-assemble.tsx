@@ -15,8 +15,7 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
   const smImg = trackData.spotifyData.album.images[2].url;
   const name = trackData.spotifyData.name;
   const artistNames = trackData.spotifyData.artists;
-
-  console.log(relatedTracksData);
+  // console.log(relatedTracksData);
 
   return (
     <Box
