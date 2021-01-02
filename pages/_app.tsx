@@ -4,6 +4,7 @@ import customTheme from "../config/chakra-ui/theme";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import "../global-styles.css";
+import "react-multi-carousel/lib/styles.css";
 
 // This default export is required in a new `pages/_app.js` file.
 export default function MyApp({ Component, pageProps }: AppProps) {
