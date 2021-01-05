@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import { v4 as uuid } from "uuid";
-import { Heading } from "@chakra-ui/react";
 import Props from "./related-tracks-carousel.model";
 import CarouselCard from "../carousel-card/carousel-card";
+import { Box } from "@chakra-ui/react";
 
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1250 },
     items: 3,
-    partialVisibilityGutter: 60,
+    partialVisibilityGutter: 10,
   },
   desktop1: {
     breakpoint: { max: 1250, min: 998 },
@@ -36,12 +36,20 @@ const responsive = {
 //check if no data returned
 const RelatedTrackCarousel: React.FC<Props> = (props: Props) => {
   const { relatedTracksData } = props;
+
   return (
-    <Carousel partialVisible responsive={responsive} draggable={false}>
-      {relatedTracksData.map((trackData) => {
-        return <CarouselCard key={uuid()} trackData={trackData} />;
-      })}
-    </Carousel>
+    <Box w="90%" m="100px auto">
+      <Carousel partialVisible responsive={responsive} draggable={false}>
+        {relatedTracksData.map((trackData) => {
+          return (
+            <CarouselCard
+              key={trackData.spotifyData.id}
+              trackData={trackData}
+            />
+          );
+        })}
+      </Carousel>
+    </Box>
   );
 };
 

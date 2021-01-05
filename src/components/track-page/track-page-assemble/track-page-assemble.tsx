@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Box, Image, Heading, Text, chakra, Stack } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { Box, Image, Heading, chakra } from "@chakra-ui/react";
 import Props from "./track-page-assemble.model";
 import { isMobile, isTablet } from "react-device-detect";
 import { v4 as uuid } from "uuid";

@@ -64,15 +64,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         .orderBy("spotifyData.id", "desc")
         // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
         // .orderBy("pageViews.totalViews", "desc")
-        .limit(3)
+        .limit(4)
         .get();
 
       relatedTracksSnapShots.forEach(function (doc) {
         relatedTracksData.push(JSON.stringify(doc.data()));
       });
 
-      //if theres less than 3 tracks returned from the first query(currently it's from the album)
-      if (relatedTracksData.length < 3) {
+      //if theres less than 4 tracks returned from the first query(currently it's from the album)
+      if (relatedTracksData.length < 4) {
         console.log("I'm running here");
         const moreRTSnapShots = await db
           .collection("trackData")
@@ -83,7 +83,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           .orderBy("spotifyData.id", "desc")
           // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
           // .orderBy("pageViews.totalViews",'desc')
-          .limit(3)
+          .limit(4)
           .get();
         console.log("before");
         moreRTSnapShots.forEach(function (doc) {
@@ -94,7 +94,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
       //TODO: Do the same in the next return, remember we do two returns here
       //if we get nothing out of the database, then calling the spotify api to get related artist data
-      if (relatedTracksData.length < 3) {
+      if (relatedTracksData.length < 4) {
         try {
           const token = await getToken();
           const spotifyApi = new SpotifyWebApi({
@@ -118,7 +118,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             return track;
           });
 
-          for (let i = 0; i < 3; i++) {
+          for (let i = 0; i < 4; i++) {
             relatedTracksData.push(JSON.stringify(modifiedTracks[i]));
           }
 
@@ -189,15 +189,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           .orderBy("spotifyData.id", "desc")
           // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
           // .orderBy("pageViews.totalViews", "desc")
-          .limit(3)
+          .limit(4)
           .get();
 
         relatedTracksSnapShots.forEach(function (doc) {
           relatedTracksData.push(JSON.stringify(doc.data()));
         });
 
-        //if theres less than 3 tracks returned from the first query(currently it's from the album)
-        if (relatedTracksData.length < 3) {
+        //if theres less than 4 tracks returned from the first query(currently it's from the album)
+        if (relatedTracksData.length < 4) {
           const moreRTSnapShots = await db
             .collection("trackData")
             .where("spotifyData.id", "!=", trackId)
@@ -208,7 +208,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             )
             // <= somehow using this doesn't returns anything. maybe firebase doesn't support nested data ordering
             // .orderBy("pageViews.totalViews", "desc")
-            .limit(3 - relatedTracksData.length)
+            .limit(4 - relatedTracksData.length)
             .get();
           moreRTSnapShots.forEach(function (doc) {
             relatedTracksData.push(JSON.stringify(doc.data()));
@@ -216,7 +216,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
 
         //if we get nothing out of the database, then calling the spotify api to get related artist data
-        if (relatedTracksData.length < 3) {
+        if (relatedTracksData.length < 4) {
           try {
             const token = await getToken();
             const spotifyApi = new SpotifyWebApi({
@@ -240,7 +240,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
               return track;
             });
 
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 4; i++) {
               relatedTracksData.push(JSON.stringify(modifiedTracks[i]));
             }
 
