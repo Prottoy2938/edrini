@@ -1,6 +1,6 @@
 import React from "react";
 import { NextSeo } from "next-seo";
-import { Box } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import * as admin from "firebase-admin";
 import getWeekNumber from "../src/helper-functions/get-week-numbers";
@@ -299,11 +299,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 interface PropTypes {
-  error: {
-    error: boolean;
-    errorCode: number;
-    errorMsg: string;
-  };
+  error: boolean;
+  errorCode: number;
+  errorMsg: string;
   trackData: string;
   relatedTracksData: string[];
 }
@@ -311,11 +309,20 @@ interface PropTypes {
 const Home: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   props: PropTypes
 ) => {
-  const {
-    error: { errorMsg, error },
-  } = props;
+  const { error, errorMsg } = props;
+
   if (error) {
-    return <h1>{errorMsg}</h1>;
+    return (
+      <Heading m="0 auto" mt={10} display="table" size="2xl">
+        {errorMsg}
+      </Heading>
+    );
+  } else if (!props.trackData) {
+    return (
+      <Heading m="0 auto" mt={10} display="table" size="2xl">
+        Something went wrong!
+      </Heading>
+    );
   } else {
     const trackData: TrackDataProps = JSON.parse(props.trackData);
     const relatedTracksData: TrackDataProps[] = props.relatedTracksData.map(

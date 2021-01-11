@@ -8,7 +8,7 @@ const CarouselCard: React.FC<Props> = (props: Props) => {
   const artistNames = trackData.spotifyData.artists;
 
   return (
-    <a href={`/track?s=${trackData.spotifyData.id}`}>
+    <a href={`/track?i=${trackData.spotifyData.id}`}>
       <Box
         w="300px"
         height="300px"
