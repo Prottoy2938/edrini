@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, chakra } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { Box, chakra, Button } from "@chakra-ui/react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
@@ -25,8 +25,10 @@ const marks = {
 
 const RatingSection: React.FC<Props> = (props: Props) => {
   const { userRating, setUserRating } = props;
+  const [userRatingChanged, setUserRatingChanged] = useState(false);
   const handleRatingChange = (val) => {
     setUserRating(Number(val));
+    setUserRatingChanged(true);
   };
 
   const colorDependClass =
@@ -80,6 +82,13 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         >
           7.6
         </Text> */}
+        {userRatingChanged && (
+          <Box textAlign="right" mt={12}>
+            <Button size="sm" colorScheme="cyan">
+              Submit
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
