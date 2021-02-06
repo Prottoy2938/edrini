@@ -5,6 +5,7 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import "../global-styles.css";
 import "react-multi-carousel/lib/styles.css";
+import { AuthProvider } from "../src/handle-auth/auth-functions";
 
 // This default export is required in a new `pages/_app.js` file.
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -17,7 +18,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <ChakraProvider theme={customTheme}>
-        <Component {...pageProps} />
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
       </ChakraProvider>
     </>
   );

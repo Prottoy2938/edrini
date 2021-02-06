@@ -37,7 +37,7 @@ export interface UserDataType {
 }
 
 export interface UseProvideAuthReturned {
-  user: UserData;
+  user: UserDataType;
   handleSignUp: (
     email: string,
     password: string,
