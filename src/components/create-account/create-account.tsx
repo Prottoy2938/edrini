@@ -62,11 +62,8 @@ const UserLogin: React.FC = () => {
         >
           <div>
             <div className={styles.illusContent}>
-              <Text fontSize="2xl">SurveyWave</Text>
-              <Text fontSize="lg">
-                Do Surveys on Your Idea/Event/Anything and Receive Peoples
-                Feedback
-              </Text>
+              <Text fontSize="2xl">Edrini</Text>
+              <Text fontSize="lg">A Web Platform Where You Can Rate Music</Text>
             </div>
 
             <img

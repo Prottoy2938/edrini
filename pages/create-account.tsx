@@ -25,7 +25,7 @@ const CreateAccount: React.FC = () => {
         }}
       />
 
-      <HandleAuth authType="login" />
+      <HandleAuth authType="createAccount" />
     </>
   );
 };
