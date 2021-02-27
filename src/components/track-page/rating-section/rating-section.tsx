@@ -148,7 +148,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                 ) : (
                   <>
                     <PopoverHeader pt={4} fontWeight="bold" border="0">
-                      Not Logged In
+                      You're Not Logged in
                     </PopoverHeader>
                     <PopoverArrow />
                     <PopoverCloseButton />
@@ -164,7 +164,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                       pb={4}
                     >
                       <ButtonGroup size="sm">
-                        <Button colorScheme="green">Sign Up</Button>
+                        <Button colorScheme="green">Create Account</Button>
                         <Button
                           onClick={handleLoginModalOpen}
                           colorScheme="blue"
