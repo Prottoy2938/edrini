@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import {
   Box,
   chakra,
@@ -13,10 +13,13 @@ import {
   PopoverCloseButton,
   PopoverArrow,
   ButtonGroup,
+  Spinner,
 } from "@chakra-ui/react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
+import { AuthContext } from "../../../handle-auth/auth-functions";
+import LoginModal from "../../login-modal/login-modal";
 
 const marks = {
   0: "0",
@@ -46,11 +49,18 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   };
 
   const initialFocusRef = useRef();
+
   const {
     onOpen: handleAuthOptionOpen,
     onClose: handleAuthOptionClose,
     isOpen: authOptionOpen,
   } = useDisclosure();
+  const {
+    isOpen: loginModalOpen,
+    onOpen: handleLoginModalOpen,
+    onClose: handleLoginModalClose,
+  } = useDisclosure();
+  const { user, runningAuth } = useContext(AuthContext);
 
   const colorDependClass =
     userRating <= 30 ? "r-3" : userRating <= 70 ? "r-8" : "r-10";
@@ -124,33 +134,57 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                 borderColor="blue.800"
                 textAlign="left"
               >
-                <PopoverHeader pt={4} fontWeight="bold" border="0">
-                  Not Logged In
-                </PopoverHeader>
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverBody>
-                  Login to your account to submit. Or create an account if you
-                  haven't, it only takes a minute.
-                </PopoverBody>
-                <PopoverFooter
-                  border="0"
-                  d="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  pb={4}
-                >
-                  <ButtonGroup size="sm">
-                    <Button colorScheme="green">Sign Up</Button>
-                    <Button colorScheme="blue" ref={initialFocusRef}>
-                      Login
-                    </Button>
-                  </ButtonGroup>
-                </PopoverFooter>
+                {runningAuth ? (
+                  <Spinner
+                    thickness="4px"
+                    speed="0.65s"
+                    emptyColor="gray.200"
+                    color="blue.500"
+                    size="xl"
+                    pos="absolute"
+                    top="30%"
+                    left="45%"
+                  />
+                ) : (
+                  <>
+                    <PopoverHeader pt={4} fontWeight="bold" border="0">
+                      Not Logged In
+                    </PopoverHeader>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody>
+                      Login to your account to submit. Or create an account if
+                      you haven't, it only takes a minute.
+                    </PopoverBody>
+                    <PopoverFooter
+                      border="0"
+                      d="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      pb={4}
+                    >
+                      <ButtonGroup size="sm">
+                        <Button colorScheme="green">Sign Up</Button>
+                        <Button
+                          onClick={handleLoginModalOpen}
+                          colorScheme="blue"
+                          ref={initialFocusRef}
+                        >
+                          Login
+                        </Button>
+                      </ButtonGroup>
+                    </PopoverFooter>
+                  </>
+                )}
               </PopoverContent>
             </Popover>
           </Box>
         )}
+        <LoginModal
+          isOpen={loginModalOpen}
+          onOpen={handleLoginModalOpen}
+          onClose={handleLoginModalClose}
+        />
       </Box>
     </Box>
   );
