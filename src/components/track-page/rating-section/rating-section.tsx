@@ -1,5 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Box, chakra, Button } from "@chakra-ui/react";
+import React, { useState, useRef } from "react";
+import {
+  Box,
+  chakra,
+  Button,
+  useDisclosure,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverFooter,
+  PopoverBody,
+  PopoverHeader,
+  PopoverCloseButton,
+  PopoverArrow,
+  ButtonGroup,
+} from "@chakra-ui/react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
@@ -30,6 +44,13 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     setUserRating(Number(val));
     setUserRatingChanged(true);
   };
+
+  const initialFocusRef = useRef();
+  const {
+    onOpen: handleAuthOptionOpen,
+    onClose: handleAuthOptionClose,
+    isOpen: authOptionOpen,
+  } = useDisclosure();
 
   const colorDependClass =
     userRating <= 30 ? "r-3" : userRating <= 70 ? "r-8" : "r-10";
@@ -84,9 +105,50 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         </Text> */}
         {userRatingChanged && (
           <Box textAlign="right" mt={12}>
-            <Button size="sm" colorScheme="cyan">
-              Submit
-            </Button>
+            <Popover
+              placement="bottom"
+              closeOnBlur={false}
+              isOpen={authOptionOpen}
+              initialFocusRef={initialFocusRef}
+              onOpen={handleAuthOptionOpen}
+              onClose={handleAuthOptionClose}
+            >
+              <PopoverTrigger>
+                <Button size="sm" colorScheme="cyan">
+                  Submit
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                color="white"
+                bg="blue.800"
+                borderColor="blue.800"
+                textAlign="left"
+              >
+                <PopoverHeader pt={4} fontWeight="bold" border="0">
+                  Not Logged In
+                </PopoverHeader>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverBody>
+                  Login to your account to submit. Or create an account if you
+                  haven't, it only takes a minute.
+                </PopoverBody>
+                <PopoverFooter
+                  border="0"
+                  d="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  pb={4}
+                >
+                  <ButtonGroup size="sm">
+                    <Button colorScheme="green">Sign Up</Button>
+                    <Button colorScheme="blue" ref={initialFocusRef}>
+                      Login
+                    </Button>
+                  </ButtonGroup>
+                </PopoverFooter>
+              </PopoverContent>
+            </Popover>
           </Box>
         )}
       </Box>
