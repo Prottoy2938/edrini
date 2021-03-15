@@ -202,7 +202,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
               ml={1}
               // mt={`${50%-}%`}
               // mt={`calc(50% - ${5 * (num + num)}px)`}
-              mt={`calc(50-${5 * num}%)`}
+              mt={`calc(50% - ${5 * num}px)`}
             />
           ))}
         </Box>
