@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../../handle-auth/auth-functions";
+import { AuthContext } from "../../../handle-auth/auth-functions";
 import styles from "./create-account.module.css";
 import {
   FormControl,

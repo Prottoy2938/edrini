@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
-import CreateAccount from "../components/create-account/create-account";
-import Login from "../components/login/login";
+import CreateAccount from "../components/auth-components/create-account/create-account";
+import Login from "../components/auth-components/login/login";
 import { AuthContext } from "../handle-auth/auth-functions";
 import { useRouter } from "next/router";
 import { Spinner, Box } from "@chakra-ui/react";

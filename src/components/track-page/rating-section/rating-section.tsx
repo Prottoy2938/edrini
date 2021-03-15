@@ -14,12 +14,14 @@ import {
   PopoverArrow,
   ButtonGroup,
   Spinner,
+  Stack,
 } from "@chakra-ui/react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
 import { AuthContext } from "../../../handle-auth/auth-functions";
-import LoginModal from "../../login-modal/login-modal";
+import LoginModal from "../../auth-components/login-modal/login-modal";
+import { v4 as uuid } from "uuid";
 
 const marks = {
   0: "0",
@@ -185,6 +187,25 @@ const RatingSection: React.FC<Props> = (props: Props) => {
           onOpen={handleLoginModalOpen}
           onClose={handleLoginModalClose}
         />
+      </Box>
+      <Box mt={20} mb={20} height={["50%", "40%", "50%", "300px"]}>
+        <Box height="100%" display="flex" flexDirection="row">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+            <Box
+              key={uuid()}
+              width="3px"
+              pt={`${5 * num}px`}
+              pb={`${5 * num}px`}
+              height="1px"
+              bg="blue.500"
+              mr={1}
+              ml={1}
+              // mt={`${50%-}%`}
+              // mt={`calc(50% - ${5 * (num + num)}px)`}
+              mt={`calc(50-${5 * num}%)`}
+            />
+          ))}
+        </Box>
       </Box>
     </Box>
   );
