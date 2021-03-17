@@ -45,7 +45,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
             </FormControl>
             <FormControl mt={7}>
               <FormLabel>Date of Birth</FormLabel>
-              <Input ref={initialRef} placeholder="First name" />
+              <Input placeholder="First name" />
             </FormControl>
             <FormControl id="country" mt={7}>
               <FormLabel>Country</FormLabel>

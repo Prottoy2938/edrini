@@ -14,15 +14,20 @@ import {
   PopoverArrow,
   ButtonGroup,
   Spinner,
-  Stack,
 } from "@chakra-ui/react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
 import { AuthContext } from "../../../handle-auth/auth-functions";
-import LoginModal from "../../auth-components/login-modal/login-modal";
 import { v4 as uuid } from "uuid";
-import CreateAccountModal from "../../auth-components/create-account-modal/create-account-modal";
+import dynamic from "next/dynamic";
+const CreateAccountModal = dynamic(
+  () =>
+    import("../../auth-components/create-account-modal/create-account-modal")
+);
+const LoginModal = dynamic(
+  () => import("../../auth-components/login-modal/login-modal")
+);
 
 const RatingSection: React.FC<Props> = (props: Props) => {
   const { userRating, setUserRating } = props;
@@ -208,16 +213,21 @@ const RatingSection: React.FC<Props> = (props: Props) => {
           ))}
         </Box>
       </Box>
-      <CreateAccountModal
-        onClose={handleSignUpModalClose}
-        isOpen={signUpModalOpen}
-        finalRef={authEndFocusRef}
-      />
-      <LoginModal
-        isOpen={loginModalOpen}
-        onClose={handleLoginModalClose}
-        finalRef={authEndFocusRef}
-      />
+      {signUpModalOpen && (
+        <CreateAccountModal
+          onClose={handleSignUpModalClose}
+          isOpen={signUpModalOpen}
+          finalRef={authEndFocusRef}
+        />
+      )}
+
+      {loginModalOpen && (
+        <LoginModal
+          isOpen={loginModalOpen}
+          onClose={handleLoginModalClose}
+          finalRef={authEndFocusRef}
+        />
+      )}
     </Box>
   );
 };
