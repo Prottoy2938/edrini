@@ -189,20 +189,19 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         />
       </Box>
       <Box mt={20} mb={20} height={["50%", "40%", "50%", "300px"]}>
-        <Box height="100%" display="flex" flexDirection="row">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+        <Box height="100%" display="flex" flexDirection="row" mt="20%">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((num) => (
             <Box
+              // To make the component bigger, make sure to use same number on the `pt`, `pb` and `mt`.
               key={uuid()}
               width="3px"
-              pt={`${5 * num}px`}
-              pb={`${5 * num}px`}
+              pt={`${10 * num}px`}
+              pb={`${10 * num}px`}
               height="1px"
               bg="blue.500"
               mr={1}
               ml={1}
-              // mt={`${50%-}%`}
-              // mt={`calc(50% - ${5 * (num + num)}px)`}
-              mt={`calc(50% - ${5 * num}px)`}
+              mt={`calc(50% - ${10 * num}px)`}
             />
           ))}
         </Box>
