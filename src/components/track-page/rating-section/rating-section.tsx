@@ -22,25 +22,7 @@ import Props from "./rating-section.model";
 import { AuthContext } from "../../../handle-auth/auth-functions";
 import LoginModal from "../../auth-components/login-modal/login-modal";
 import { v4 as uuid } from "uuid";
-
-const marks = {
-  0: "0",
-  10: "1",
-  20: {
-    style: {
-      color: "#559945",
-    },
-    label: <strong>2</strong>,
-  },
-  30: "3",
-  40: "4",
-  50: "5",
-  60: "6",
-  70: "7",
-  80: "8",
-  90: "9",
-  100: "10",
-};
+import CreateAccountModal from "../../auth-components/create-account-modal/create-account-modal";
 
 const RatingSection: React.FC<Props> = (props: Props) => {
   const { userRating, setUserRating } = props;
@@ -50,19 +32,39 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     setUserRatingChanged(true);
   };
 
-  const initialFocusRef = useRef();
+  const { user, runningAuth } = useContext(AuthContext);
+
+  const {
+    isOpen: signUpModalOpen,
+    onOpen: handleSignUpModalOpen,
+    onClose: closeSignUpModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: loginModalOpen,
+    onOpen: handleLoginModalOpen,
+    onClose: closeLoginModal,
+  } = useDisclosure();
+
+  const authInitialFocusRef = useRef();
+  const authEndFocusRef = useRef();
 
   const {
     onOpen: handleAuthOptionOpen,
     onClose: handleAuthOptionClose,
     isOpen: authOptionOpen,
   } = useDisclosure();
-  const {
-    isOpen: loginModalOpen,
-    onOpen: handleLoginModalOpen,
-    onClose: handleLoginModalClose,
-  } = useDisclosure();
-  const { user, runningAuth } = useContext(AuthContext);
+
+  //closing the both dialog and auth popover option
+  const handleSignUpModalClose = () => {
+    closeSignUpModal();
+    handleAuthOptionClose();
+  };
+
+  const handleLoginModalClose = () => {
+    closeLoginModal();
+    handleAuthOptionClose();
+  };
 
   const colorDependClass =
     userRating <= 30 ? "r-3" : userRating <= 70 ? "r-8" : "r-10";
@@ -121,12 +123,12 @@ const RatingSection: React.FC<Props> = (props: Props) => {
               placement="bottom"
               closeOnBlur={false}
               isOpen={authOptionOpen}
-              initialFocusRef={initialFocusRef}
+              initialFocusRef={authInitialFocusRef}
               onOpen={handleAuthOptionOpen}
               onClose={handleAuthOptionClose}
             >
               <PopoverTrigger>
-                <Button size="sm" colorScheme="cyan">
+                <Button size="sm" colorScheme="cyan" ref={authEndFocusRef}>
                   Submit
                 </Button>
               </PopoverTrigger>
@@ -166,11 +168,16 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                       pb={4}
                     >
                       <ButtonGroup size="sm">
-                        <Button colorScheme="green">Create Account</Button>
+                        <Button
+                          colorScheme="green"
+                          onClick={handleSignUpModalOpen}
+                        >
+                          Create Account
+                        </Button>
                         <Button
                           onClick={handleLoginModalOpen}
                           colorScheme="blue"
-                          ref={initialFocusRef}
+                          ref={authInitialFocusRef}
                         >
                           Login
                         </Button>
@@ -182,11 +189,6 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             </Popover>
           </Box>
         )}
-        <LoginModal
-          isOpen={loginModalOpen}
-          onOpen={handleLoginModalOpen}
-          onClose={handleLoginModalClose}
-        />
       </Box>
       <Box mt={20} mb={20} height={["50%", "40%", "50%", "300px"]}>
         <Box height="100%" display="flex" flexDirection="row" mt="20%">
@@ -206,6 +208,16 @@ const RatingSection: React.FC<Props> = (props: Props) => {
           ))}
         </Box>
       </Box>
+      <CreateAccountModal
+        onClose={handleSignUpModalClose}
+        isOpen={signUpModalOpen}
+        finalRef={authEndFocusRef}
+      />
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={handleLoginModalClose}
+        finalRef={authEndFocusRef}
+      />
     </Box>
   );
 };
