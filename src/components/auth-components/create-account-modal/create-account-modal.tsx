@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Box,
   Modal,
@@ -14,13 +14,58 @@ import {
   ModalCloseButton,
   Select,
 } from "@chakra-ui/react";
-import { Props } from "./create-account-modal.model";
+import { Props, UserInfoTypes } from "./create-account-modal.model";
 import countriesList from "./countries-list";
 import { v4 as uuid } from "uuid";
+import DatePicker from "react-datepicker";
 
 const CreateAccountModal: React.FC<Props> = (props: Props) => {
   const { isOpen, onClose, finalRef } = props;
+  const [userInfo, setUserInfo] = useState<UserInfoTypes>({
+    firstName: "",
+    lastName: "",
+    birthDate: new Date(),
+    country: "",
+    gender: "",
+  });
+
   const initialRef = useRef();
+
+  const changeFirstName = (e: any) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      firstName: e.target.value,
+    }));
+  };
+
+  const changeLastName = (e: any) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      lastName: e.target.value,
+    }));
+  };
+
+  const changeBirthDate = (date: Date) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      birthDate: date,
+    }));
+  };
+
+  const changeGender = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      gender: e.target.value,
+    }));
+  };
+
+  const changeCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      country: e.target.value,
+    }));
+  };
+
   return (
     <Box>
       <Modal
@@ -35,26 +80,56 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel>First name</FormLabel>
-              <Input ref={initialRef} placeholder="First name" />
+              <FormLabel htmlFor="first-name">First name</FormLabel>
+              <Input
+                id="first-name"
+                ref={initialRef}
+                onChange={changeFirstName}
+                placeholder="First name"
+              />
             </FormControl>
 
             <FormControl mt={7}>
-              <FormLabel>Last name</FormLabel>
-              <Input placeholder="Last name" />
+              <FormLabel htmlFor="last-name">Last name</FormLabel>
+              <Input
+                id="last-name"
+                placeholder="Last name"
+                onChange={changeLastName}
+              />
             </FormControl>
             <FormControl mt={7}>
-              <FormLabel>Date of Birth</FormLabel>
-              <Input placeholder="First name" />
+              <FormLabel id="birth-date">Date of Birth</FormLabel>
+              <DatePicker
+                id="birth-date"
+                selectedDate={userInfo.birthDate}
+                onChange={changeBirthDate}
+                showPopperArrow={true}
+              />
             </FormControl>
-            <FormControl id="country" mt={7}>
-              <FormLabel>Country</FormLabel>
-              <Select placeholder="Select country">
+            <FormControl mt={7}>
+              <FormLabel htmlFor="country">Country</FormLabel>
+              <Select
+                onChange={changeCountry}
+                id="country"
+                placeholder="Select country"
+              >
                 {countriesList.map((country) => (
                   <option value={country.code} key={uuid()}>
                     {country.name}
                   </option>
                 ))}
+              </Select>
+            </FormControl>
+            <FormControl mt={7}>
+              <FormLabel htmlFor="gender">Gender</FormLabel>
+              <Select
+                onChange={changeGender}
+                id="gender"
+                placeholder="Select gender"
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">other</option>
               </Select>
             </FormControl>
           </ModalBody>
@@ -67,6 +142,12 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <DatePicker
+        id="birth-date"
+        selectedDate={userInfo.birthDate}
+        onChange={changeBirthDate}
+        showPopperArrow={true}
+      />
     </Box>
   );
 };

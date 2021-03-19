@@ -3,3 +3,11 @@ export interface Props {
   onClose: () => void;
   finalRef: any;
 }
+
+export interface UserInfoTypes {
+  firstName: string;
+  lastName: string;
+  birthDate: Date;
+  country: string;
+  gender: string;
+}
