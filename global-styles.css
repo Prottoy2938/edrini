@@ -21,3 +21,10 @@ div.r-10 .rc-slider-track {
 .rdp-day_selected:not([disabled]) {
   background-color: rgba(233, 233, 233, 0.5);
 }
+.rdp-button:focus:not([disabled]) {
+  background-color: rgba(233, 233, 233, 0.5);
+}
+
+.rdp-table tfoot {
+  margin-top: 20px;
+}

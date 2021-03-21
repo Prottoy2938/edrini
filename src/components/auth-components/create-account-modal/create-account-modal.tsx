@@ -24,9 +24,9 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
   const [userInfo, setUserInfo] = useState<UserInfoTypes>({
     firstName: "",
     lastName: "",
-    birthDate: new Date(),
+    birthDate: new Date(2002, 11),
     country: "",
-    gender: "",
+    gender: "male",
   });
 
   const initialRef = useRef();
@@ -102,7 +102,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                 onChange={changeLastName}
               />
             </FormControl>
-            <FormControl mt={7}>
+            <FormControl mt={12} mb={16}>
               <FormLabel id="birth-date">Date of Birth</FormLabel>
               <DayPicker
                 mode="single"
@@ -131,6 +131,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                 onChange={changeGender}
                 id="gender"
                 placeholder="Select gender"
+                value={userInfo.gender}
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
