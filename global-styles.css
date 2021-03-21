@@ -13,3 +13,11 @@ div.r-8 .rc-slider-track {
 div.r-10 .rc-slider-track {
   background-color: #ff006f;
 }
+
+.rdp-button:hover:not([disabled]) {
+  background-color: rgba(233, 233, 233, 0.2);
+}
+
+.rdp-day_selected:not([disabled]) {
+  background-color: rgba(233, 233, 233, 0.5);
+}

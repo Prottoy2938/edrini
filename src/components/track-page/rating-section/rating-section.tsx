@@ -21,6 +21,7 @@ import Props from "./rating-section.model";
 import { AuthContext } from "../../../handle-auth/auth-functions";
 import { v4 as uuid } from "uuid";
 import dynamic from "next/dynamic";
+
 const CreateAccountModal = dynamic(
   () =>
     import("../../auth-components/create-account-modal/create-account-modal")
@@ -176,13 +177,13 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                         <Button
                           colorScheme="green"
                           onClick={handleSignUpModalOpen}
+                          ref={authInitialFocusRef}
                         >
                           Create Account
                         </Button>
                         <Button
                           onClick={handleLoginModalOpen}
                           colorScheme="blue"
-                          ref={authInitialFocusRef}
                         >
                           Login
                         </Button>

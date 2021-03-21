@@ -3,9 +3,10 @@ import { ChakraProvider } from "@chakra-ui/react";
 import customTheme from "../config/chakra-ui/theme";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import "../global-styles.css";
-import "react-multi-carousel/lib/styles.css";
 import { AuthProvider } from "../src/handle-auth/auth-functions";
+import "react-multi-carousel/lib/styles.css";
+import "react-day-picker/style.css";
+import "../global-styles.css";
 
 // This default export is required in a new `pages/_app.js` file.
 export default function MyApp({ Component, pageProps }: AppProps) {

@@ -17,7 +17,7 @@ import {
 import { Props, UserInfoTypes } from "./create-account-modal.model";
 import countriesList from "./countries-list";
 import { v4 as uuid } from "uuid";
-import DatePicker from "react-datepicker";
+import { DayPicker } from "react-day-picker";
 
 const CreateAccountModal: React.FC<Props> = (props: Props) => {
   const { isOpen, onClose, finalRef } = props;
@@ -46,6 +46,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
   };
 
   const changeBirthDate = (date: Date) => {
+    console.log(date);
     setUserInfo((prevState) => ({
       ...prevState,
       birthDate: date,
@@ -65,6 +66,10 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
       country: e.target.value,
     }));
   };
+
+  const calenderFooter = userInfo.birthDate
+    ? `You selected ${userInfo.birthDate.toLocaleDateString()}.`
+    : "Pick your birth date";
 
   return (
     <Box>
@@ -99,11 +104,11 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
             </FormControl>
             <FormControl mt={7}>
               <FormLabel id="birth-date">Date of Birth</FormLabel>
-              <DatePicker
-                id="birth-date"
-                selectedDate={userInfo.birthDate}
-                onChange={changeBirthDate}
-                showPopperArrow={true}
+              <DayPicker
+                mode="single"
+                onSelect={changeBirthDate}
+                footer={calenderFooter}
+                defaultMonth={new Date(2002, 11)}
               />
             </FormControl>
             <FormControl mt={7}>
@@ -142,12 +147,6 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <DatePicker
-        id="birth-date"
-        selectedDate={userInfo.birthDate}
-        onChange={changeBirthDate}
-        showPopperArrow={true}
-      />
     </Box>
   );
 };
