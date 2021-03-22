@@ -196,7 +196,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
           </Box>
         )}
       </Box>
-      <Box mt={20} mb={20} height={["50%", "40%", "50%", "300px"]}>
+      {/* <Box mt={20} mb={20} height={["50%", "40%", "50%", "300px"]}>
         <Box height="100%" display="flex" flexDirection="row" mt="20%">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((num) => (
             <Box
@@ -213,7 +213,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             />
           ))}
         </Box>
-      </Box>
+      </Box> */}
       {signUpModalOpen && (
         <CreateAccountModal
           onClose={handleSignUpModalClose}

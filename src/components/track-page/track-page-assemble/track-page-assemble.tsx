@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Box, Image, Heading, chakra } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Image, Heading, Stack, chakra, Text } from "@chakra-ui/react";
 import Props from "./track-page-assemble.model";
 import { isMobile, isTablet } from "react-device-detect";
 import { v4 as uuid } from "uuid";
@@ -54,10 +54,24 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
               </chakra.a>
             ))}
           </Heading>
-          <RatingSection
-            userRating={userRating}
-            setUserRating={setUserRating}
-          />
+          <Box display="table" m="100px auto">
+            {" "}
+            <Stack isInline>
+              <Heading>4.3</Heading>{" "}
+              <Heading size="xs" mt="20px !important" color="grey.300">
+                / 10
+              </Heading>
+            </Stack>
+            <Text textAlign="center" mt={2} fontWeight="200">
+              200
+            </Text>
+          </Box>
+          <Box>
+            <RatingSection
+              userRating={userRating}
+              setUserRating={setUserRating}
+            />
+          </Box>
           <TrackInfo trackData={trackData} />
         </Box>
       </Box>
