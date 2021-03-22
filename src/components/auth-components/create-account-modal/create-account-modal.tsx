@@ -13,36 +13,37 @@ import {
   ModalBody,
   ModalCloseButton,
   Select,
+  InputRightElement,
+  IconButton,
+  InputGroup,
 } from "@chakra-ui/react";
 import { Props, UserInfoTypes } from "./create-account-modal.model";
 import countriesList from "./countries-list";
 import { v4 as uuid } from "uuid";
 import { DayPicker } from "react-day-picker";
+import { ViewIcon } from "@chakra-ui/icons";
 
 const CreateAccountModal: React.FC<Props> = (props: Props) => {
   const { isOpen, onClose, finalRef } = props;
   const [userInfo, setUserInfo] = useState<UserInfoTypes>({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     birthDate: new Date(2002, 11),
     country: "",
     gender: "male",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const initialRef = useRef();
 
-  const changeFirstName = (e: any) => {
+  const changeFullName = (e: any) => {
     setUserInfo((prevState) => ({
       ...prevState,
-      firstName: e.target.value,
+      fullName: e.target.value,
     }));
   };
 
-  const changeLastName = (e: any) => {
-    setUserInfo((prevState) => ({
-      ...prevState,
-      lastName: e.target.value,
-    }));
+  const togglePassVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const changeBirthDate = (date: Date) => {
@@ -85,23 +86,15 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel htmlFor="first-name">First name</FormLabel>
+              <FormLabel htmlFor="name">Name</FormLabel>
               <Input
-                id="first-name"
+                id="name"
                 ref={initialRef}
-                onChange={changeFirstName}
-                placeholder="First name"
+                onChange={changeFullName}
+                placeholder="Name"
               />
             </FormControl>
 
-            <FormControl mt={7}>
-              <FormLabel htmlFor="last-name">Last name</FormLabel>
-              <Input
-                id="last-name"
-                placeholder="Last name"
-                onChange={changeLastName}
-              />
-            </FormControl>
             <FormControl mt={12} mb={16}>
               <FormLabel id="birth-date">Date of Birth</FormLabel>
               <DayPicker
@@ -135,14 +128,42 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="other">other</option>
+                <option value="other">Other</option>
               </Select>
+            </FormControl>
+            <FormControl mt={10}>
+              <FormLabel>Email</FormLabel>
+              <Input variant="filled" type="email" placeholder="email" />
+            </FormControl>
+
+            <FormControl mt={7}>
+              <FormLabel>Password</FormLabel>
+              <InputGroup size="md">
+                <Input
+                  variant="filled"
+                  placeholder="********"
+                  type={showPassword ? "text" : "password"}
+                />
+
+                <InputRightElement width="4.5rem">
+                  <IconButton
+                    // variant="ghost"
+                    colorScheme="black"
+                    aria-label={
+                      showPassword ? "show password" : "hide password"
+                    }
+                    icon={<ViewIcon />}
+                    onClick={togglePassVisibility}
+                    h="1.75rem"
+                  />
+                </InputRightElement>
+              </InputGroup>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3}>
-              Save
+              Create
             </Button>
             <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>

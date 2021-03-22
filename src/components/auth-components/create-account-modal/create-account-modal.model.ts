@@ -5,8 +5,7 @@ export interface Props {
 }
 
 export interface UserInfoTypes {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   birthDate: Date;
   country: string;
   gender: string;

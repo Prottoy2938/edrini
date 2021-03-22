@@ -102,6 +102,9 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   return (
     <Box mt={6}>
       <Box className={colorDependClass}>
+        {/* {
+      // transform: scale(1.5) 
+    // } */}
         <Slider
           dots
           min={0}
@@ -112,17 +115,6 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         />
       </Box>
       <Box>
-        {/* <Text
-          fontSize="lg"
-          bg="#0085f2"
-          pr={1}
-          pl={1}
-          display="table"
-          float="right"
-          mt={2}
-        >
-          7.6
-        </Text> */}
         {userRatingChanged && (
           <Box textAlign="right" mt={12}>
             <Popover

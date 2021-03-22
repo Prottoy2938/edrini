@@ -66,7 +66,17 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
               200
             </Text>
           </Box>
-          <Box>
+          <Box mb={20}>
+            <Heading
+              borderBottom="6px double gray"
+              pb={1}
+              display="table"
+              mb={3}
+              size="sm"
+              color="grey.100"
+            >
+              You
+            </Heading>
             <RatingSection
               userRating={userRating}
               setUserRating={setUserRating}
