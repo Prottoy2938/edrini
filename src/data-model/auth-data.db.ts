@@ -43,8 +43,14 @@ export interface UseProvideAuthReturned {
     password: string,
     {
       fullName,
+      birthDate,
+      country,
+      gender,
     }: {
       fullName: string;
+      birthDate: Date;
+      country: string;
+      gender: string;
     }
   ) => void;
   handleLogin: (email: string, password: string) => void;

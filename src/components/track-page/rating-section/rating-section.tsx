@@ -99,6 +99,14 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     90: styledNumber(90, "#ff006f"),
     100: styledNumber(100, "#ff006f"),
   };
+
+  const handleRatingSubmit = () => {
+    if (user) {
+      // do something here
+    } else {
+      handleAuthOptionOpen();
+    }
+  };
   return (
     <Box mt={6}>
       <Box className={colorDependClass}>
@@ -122,7 +130,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
               closeOnBlur={false}
               isOpen={authOptionOpen}
               initialFocusRef={authInitialFocusRef}
-              onOpen={handleAuthOptionOpen}
+              onOpen={handleRatingSubmit}
               onClose={handleAuthOptionClose}
             >
               <PopoverTrigger>
@@ -136,7 +144,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                 borderColor="blue.800"
                 textAlign="left"
               >
-                {runningAuth ? (
+                {!user && runningAuth ? (
                   <Spinner
                     thickness="4px"
                     speed="0.65s"
@@ -147,7 +155,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                     top="30%"
                     left="45%"
                   />
-                ) : (
+                ) : user && !runningAuth ? null : (
                   <>
                     <PopoverHeader pt={4} fontWeight="bold" border="0">
                       You're Not Logged in

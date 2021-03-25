@@ -9,6 +9,7 @@ import {
   UserDataType,
 } from "../data-model/auth-data.db";
 import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 if (!firebase.default.apps.length) {
   firebase.default.initializeApp({
@@ -58,6 +59,8 @@ const useProvideAuth = (): UseProvideAuthReturned => {
       validatingLogin: false,
     }
   );
+
+  const toast = useToast();
 
   const clearErrors = (): void => {
     setEmailError("");
@@ -169,13 +172,30 @@ const useProvideAuth = (): UseProvideAuthReturned => {
               .then((idToken: string) => {
                 //not passing down any user information except the users token, will use that in the backend api to get users info
                 axios
-                  .get("/api/auth/create-new-user", {
-                    headers: {
-                      token: idToken,
+                  .post(
+                    "/api/auth/create-new-user",
+                    {
+                      fullName,
+                      birthDate,
+                      country,
+                      gender,
                     },
-                  })
+                    {
+                      headers: {
+                        token: idToken,
+                      },
+                    }
+                  )
                   .then(() => {
-                    // getUserData(); //call this function at this stage so we can fetch user data once the account has been created, and update the `userInfoDB` state
+                    toast({
+                      title: "Account Created Successfully",
+                      description:
+                        "Your account was created successfully, you can now use the functionality.",
+                      status: "success",
+                      duration: 9000,
+                      position: isMobile ? "bottom" : "bottom-right",
+                      isClosable: true,
+                    });
                   })
                   .catch(() => {
                     console.log("failed created user account on the db");

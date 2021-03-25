@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import {
   Box,
   Modal,
@@ -8,6 +8,7 @@ import {
   FormControl,
   Input,
   FormLabel,
+  useToast,
   ModalFooter,
   Button,
   ModalBody,
@@ -15,6 +16,7 @@ import {
   Select,
   InputRightElement,
   IconButton,
+  FormErrorMessage,
   InputGroup,
 } from "@chakra-ui/react";
 import { Props, UserInfoTypes } from "./create-account-modal.model";
@@ -22,8 +24,22 @@ import countriesList from "./countries-list";
 import { v4 as uuid } from "uuid";
 import { DayPicker } from "react-day-picker";
 import { ViewIcon } from "@chakra-ui/icons";
+import { AuthContext } from "../../../handle-auth/auth-functions";
+import { isMobile } from "react-device-detect";
 
 const CreateAccountModal: React.FC<Props> = (props: Props) => {
+  const {
+    handleSignUp,
+    runningAuth,
+    emailError,
+    passwordError,
+    loginLoading,
+    user,
+    clearErrors,
+  } = useContext(AuthContext);
+
+  const toast = useToast();
+
   const { isOpen, onClose, finalRef } = props;
   const [userInfo, setUserInfo] = useState<UserInfoTypes>({
     fullName: "",
@@ -32,8 +48,35 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
     gender: "male",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const initialRef = useRef();
+
+  useEffect(() => {
+    if (!runningAuth && user) {
+      toast({
+        title: "Creating Account Successful",
+        status: "warning",
+        duration: 9000,
+        position: isMobile ? "bottom" : "bottom-right",
+        isClosable: true,
+      });
+      onClose();
+    }
+  }, [runningAuth, user]);
+
+  useEffect(() => {
+    clearErrors();
+  }, []);
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
   const changeFullName = (e: any) => {
     setUserInfo((prevState) => ({
@@ -72,6 +115,28 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
     ? `You selected ${userInfo.birthDate.toLocaleDateString()}.`
     : "Pick your birth date";
 
+  const handleSignUpSteps = () => {
+    const { fullName, birthDate, gender, country } = userInfo;
+    if (fullName && birthDate && gender && country) {
+      handleSignUp(email, password, {
+        fullName,
+        birthDate,
+        gender,
+        country,
+      });
+    } else {
+      toast({
+        title: "Fill out all the input fields",
+        description:
+          "You didn't filled out all the necessary fields, fill them out to move forward.",
+        status: "warning",
+        duration: 9000,
+        position: isMobile ? "bottom" : "bottom-right",
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Box>
       <Modal
@@ -85,7 +150,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
           <ModalHeader>Create your account</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel htmlFor="name">Name</FormLabel>
               <Input
                 id="name"
@@ -95,7 +160,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
               />
             </FormControl>
 
-            <FormControl mt={12} mb={16}>
+            <FormControl mt={12} mb={16} isRequired>
               <FormLabel id="birth-date">Date of Birth</FormLabel>
               <DayPicker
                 mode="single"
@@ -104,12 +169,13 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                 defaultMonth={new Date(2002, 11)}
               />
             </FormControl>
-            <FormControl mt={7}>
+            <FormControl mt={7} isRequired>
               <FormLabel htmlFor="country">Country</FormLabel>
               <Select
                 onChange={changeCountry}
                 id="country"
                 placeholder="Select country"
+                value={userInfo.country}
               >
                 {countriesList.map((country) => (
                   <option value={country.code} key={uuid()}>
@@ -118,7 +184,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                 ))}
               </Select>
             </FormControl>
-            <FormControl mt={7}>
+            <FormControl mt={7} isRequired>
               <FormLabel htmlFor="gender">Gender</FormLabel>
               <Select
                 onChange={changeGender}
@@ -131,18 +197,27 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                 <option value="other">Other</option>
               </Select>
             </FormControl>
-            <FormControl mt={10}>
+            <FormControl mt={10} isRequired isInvalid={!!emailError}>
               <FormLabel>Email</FormLabel>
-              <Input variant="filled" type="email" placeholder="email" />
+              <Input
+                type="email"
+                value={email}
+                variant="filled"
+                placeholder="email"
+                onChange={handleEmailChange}
+              />
+              <FormErrorMessage>{emailError}</FormErrorMessage>
             </FormControl>
 
-            <FormControl mt={7}>
+            <FormControl mt={7} isRequired isInvalid={!!passwordError}>
               <FormLabel>Password</FormLabel>
               <InputGroup size="md">
                 <Input
                   variant="filled"
                   placeholder="********"
                   type={showPassword ? "text" : "password"}
+                  onChange={handlePasswordChange}
+                  value={password}
                 />
 
                 <InputRightElement width="4.5rem">
@@ -158,14 +233,23 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                   />
                 </InputRightElement>
               </InputGroup>
+              <FormErrorMessage>{emailError}</FormErrorMessage>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              disabled={loginLoading.accountCreating}
+              onClick={handleSignUpSteps}
+              isLoading={loginLoading.accountCreating}
+            >
               Create
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose} disabled={loginLoading.accountCreating}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
