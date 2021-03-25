@@ -7,7 +7,7 @@ import {
   loginLoadingActions,
   loginLoadingState,
   UserDataType,
-} from "../data-model/auth-data.db";
+} from "../../../data-model/auth-data.db";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 

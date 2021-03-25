@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import verifyIdToken from "../../../src/handle-auth/verify-token-id";
+import verifyIdToken from "../../../src/components/auth-components/auth-functions/verify-token-id";
 import * as admin from "firebase-admin";
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;

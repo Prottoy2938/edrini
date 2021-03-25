@@ -3,7 +3,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import customTheme from "../config/chakra-ui/theme";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { AuthProvider } from "../src/handle-auth/auth-functions";
+import { AuthProvider } from "../src/components/auth-components/auth-functions/auth-functions";
 import "react-multi-carousel/lib/styles.css";
 import "react-day-picker/style.css";
 import "../global-styles.css";

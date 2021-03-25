@@ -24,7 +24,7 @@ import countriesList from "./countries-list";
 import { v4 as uuid } from "uuid";
 import { DayPicker } from "react-day-picker";
 import { ViewIcon } from "@chakra-ui/icons";
-import { AuthContext } from "../../../handle-auth/auth-functions";
+import { AuthContext } from "../auth-functions/auth-functions";
 import { isMobile } from "react-device-detect";
 
 const CreateAccountModal: React.FC<Props> = (props: Props) => {

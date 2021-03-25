@@ -18,7 +18,7 @@ import {
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
-import { AuthContext } from "../../../handle-auth/auth-functions";
+import { AuthContext } from "../../auth-components/auth-functions/auth-functions";
 import { v4 as uuid } from "uuid";
 import dynamic from "next/dynamic";
 
@@ -123,78 +123,73 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         />
       </Box>
       <Box>
-        {userRatingChanged && (
-          <Box textAlign="right" mt={12}>
-            <Popover
-              placement="bottom"
-              closeOnBlur={false}
-              isOpen={authOptionOpen}
-              initialFocusRef={authInitialFocusRef}
-              onOpen={handleRatingSubmit}
-              onClose={handleAuthOptionClose}
+        <Box textAlign="right" mt={12}>
+          <Popover
+            placement="bottom"
+            closeOnBlur={false}
+            isOpen={authOptionOpen}
+            initialFocusRef={authInitialFocusRef}
+            onOpen={handleRatingSubmit}
+            onClose={handleAuthOptionClose}
+          >
+            <PopoverTrigger>
+              <Button size="sm" colorScheme="cyan" ref={authEndFocusRef}>
+                Submit
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              color="white"
+              bg="blue.800"
+              borderColor="blue.800"
+              textAlign="left"
             >
-              <PopoverTrigger>
-                <Button size="sm" colorScheme="cyan" ref={authEndFocusRef}>
-                  Submit
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                color="white"
-                bg="blue.800"
-                borderColor="blue.800"
-                textAlign="left"
-              >
-                {!user && runningAuth ? (
-                  <Spinner
-                    thickness="4px"
-                    speed="0.65s"
-                    emptyColor="gray.200"
-                    color="blue.500"
-                    size="xl"
-                    pos="absolute"
-                    top="30%"
-                    left="45%"
-                  />
-                ) : user && !runningAuth ? null : (
-                  <>
-                    <PopoverHeader pt={4} fontWeight="bold" border="0">
-                      You're Not Logged in
-                    </PopoverHeader>
-                    <PopoverArrow />
-                    <PopoverCloseButton />
-                    <PopoverBody>
-                      Login to your account to submit. Or create an account if
-                      you haven't, it only takes a minute.
-                    </PopoverBody>
-                    <PopoverFooter
-                      border="0"
-                      d="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      pb={4}
-                    >
-                      <ButtonGroup size="sm">
-                        <Button
-                          colorScheme="green"
-                          onClick={handleSignUpModalOpen}
-                          ref={authInitialFocusRef}
-                        >
-                          Create Account
-                        </Button>
-                        <Button
-                          onClick={handleLoginModalOpen}
-                          colorScheme="blue"
-                        >
-                          Login
-                        </Button>
-                      </ButtonGroup>
-                    </PopoverFooter>
-                  </>
-                )}
-              </PopoverContent>
-            </Popover>
-          </Box>
-        )}
+              {!user && runningAuth ? (
+                <Spinner
+                  thickness="4px"
+                  speed="0.65s"
+                  emptyColor="gray.200"
+                  color="blue.500"
+                  size="xl"
+                  pos="absolute"
+                  top="30%"
+                  left="45%"
+                />
+              ) : user && !runningAuth ? null : (
+                <>
+                  <PopoverHeader pt={4} fontWeight="bold" border="0">
+                    You're Not Logged in
+                  </PopoverHeader>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    Login to your account to submit. Or create an account if you
+                    haven't, it only takes a minute.
+                  </PopoverBody>
+                  <PopoverFooter
+                    border="0"
+                    d="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    pb={4}
+                  >
+                    <ButtonGroup size="sm">
+                      <Button
+                        colorScheme="green"
+                        onClick={handleSignUpModalOpen}
+                        ref={authInitialFocusRef}
+                      >
+                        Create Account
+                      </Button>
+                      <Button onClick={handleLoginModalOpen} colorScheme="blue">
+                        Login
+                      </Button>
+                    </ButtonGroup>
+                  </PopoverFooter>
+                </>
+              )}
+            </PopoverContent>
+          </Popover>
+        </Box>
       </Box>
       {/* <Box mt={20} mb={20} height={["50%", "40%", "50%", "300px"]}>
         <Box height="100%" display="flex" flexDirection="row" mt="20%">
