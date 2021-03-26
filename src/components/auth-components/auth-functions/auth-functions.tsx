@@ -126,7 +126,9 @@ const useProvideAuth = (): UseProvideAuthReturned => {
             setEmailError("No user found associated with this email");
             break;
           case "auth/wrong-password":
-            setPasswordError("The password is invalid/ password doesn't match");
+            setPasswordError(
+              "The password is invalid or email, password doesn't match"
+            );
             break;
           default:
             setEmailError("Something went wrong");

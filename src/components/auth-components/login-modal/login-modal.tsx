@@ -60,8 +60,8 @@ const LoginModal: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (!runningAuth && user) {
       toast({
-        title: "Creating Account Successful",
-        status: "warning",
+        title: "Logged in successfully",
+        status: "success",
         duration: 9000,
         position: isMobile ? "bottom" : "bottom-right",
         isClosable: true,
@@ -82,54 +82,57 @@ const LoginModal: React.FC<Props> = (props: Props) => {
           <ModalHeader>Login</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <FormControl isRequired isInvalid={!!emailError}>
-              <FormLabel>Email</FormLabel>
-              <Input
-                variant="filled"
-                type="email"
-                ref={initialRef}
-                placeholder="email"
-                value={email}
-                onChange={handleEmailChange}
-              />
-              <FormErrorMessage>{emailError}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid={!!passwordError} mt={4} isReadOnly>
-              <FormLabel>Password</FormLabel>
-              <InputGroup size="md">
+            <form onSubmit={handleProceed}>
+              <FormControl isRequired isInvalid={!!emailError}>
+                <FormLabel>Email</FormLabel>
                 <Input
                   variant="filled"
-                  placeholder="********"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={handlePasswordChange}
+                  type="email"
+                  ref={initialRef}
+                  placeholder="email"
+                  value={email}
+                  onChange={handleEmailChange}
                 />
+                <FormErrorMessage>{emailError}</FormErrorMessage>
+              </FormControl>
 
-                <InputRightElement width="4.5rem">
-                  <IconButton
-                    // variant="ghost"
-                    colorScheme="black"
-                    aria-label={
-                      showPassword ? "show password" : "hide password"
-                    }
-                    icon={<ViewIcon />}
-                    onClick={togglePassVisibility}
-                    h="1.75rem"
+              <FormControl isInvalid={!!passwordError} mt={4} isRequired>
+                <FormLabel>Password</FormLabel>
+                <InputGroup size="md">
+                  <Input
+                    variant="filled"
+                    placeholder="********"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={handlePasswordChange}
                   />
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage>{passwordError}</FormErrorMessage>
-            </FormControl>
 
-            <Button size="xs" mt={5} variant="link">
-              forgot password?
-            </Button>
+                  <InputRightElement width="4.5rem">
+                    <IconButton
+                      // variant="ghost"
+                      colorScheme="black"
+                      aria-label={
+                        showPassword ? "show password" : "hide password"
+                      }
+                      icon={<ViewIcon />}
+                      onClick={togglePassVisibility}
+                      h="1.75rem"
+                    />
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>{passwordError}</FormErrorMessage>
+              </FormControl>
+              <a href="/forgot-password">
+                <Button size="sm" mt={7} variant="link" type="button">
+                  forgot password?
+                </Button>
+              </a>
+            </form>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" onClick={handleProceed}>
-              Proceed
+            <Button colorScheme="blue" onClick={handleProceed} type="submit">
+              Login
             </Button>
           </ModalFooter>
         </ModalContent>
