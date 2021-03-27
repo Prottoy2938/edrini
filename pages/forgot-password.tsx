@@ -97,7 +97,7 @@ const ResetPassword: React.FC = () => {
             <Box mt={8}>
               <Stack isInline spacing={6}>
                 <Text as="u">
-                  <a href="/login">Have Password?</a>
+                  <a href="/">Have Password?</a>
                 </Text>
 
                 <a

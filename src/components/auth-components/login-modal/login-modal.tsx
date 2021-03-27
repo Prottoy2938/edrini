@@ -19,7 +19,7 @@ import {
   FormErrorMessage,
   InputGroup,
 } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
+import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../auth-functions/auth-functions";
 import { isMobile } from "react-device-detect";
 
@@ -114,7 +114,7 @@ const LoginModal: React.FC<Props> = (props: Props) => {
                       aria-label={
                         showPassword ? "show password" : "hide password"
                       }
-                      icon={<ViewIcon />}
+                      icon={!showPassword ? <ViewOffIcon /> : <ViewIcon />}
                       onClick={togglePassVisibility}
                       h="1.75rem"
                     />
