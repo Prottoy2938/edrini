@@ -19,8 +19,10 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Props from "./rating-section.model";
 import { AuthContext } from "../../auth-components/auth-functions/auth-functions";
-import { v4 as uuid } from "uuid";
+import axios from "axios";
 import dynamic from "next/dynamic";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
 const CreateAccountModal = dynamic(
   () =>
@@ -38,8 +40,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     setUserRatingChanged(true);
   };
 
-  const { user, runningAuth } = useContext(AuthContext);
-
+  const { user, runningAuth, userInfoDB } = useContext(AuthContext);
   const {
     isOpen: signUpModalOpen,
     onOpen: handleSignUpModalOpen,
@@ -102,7 +103,25 @@ const RatingSection: React.FC<Props> = (props: Props) => {
 
   const handleRatingSubmit = () => {
     if (user) {
-      // do something here
+      console.log(userInfoDB);
+      // firebase.default
+      //   .auth()
+      //   .currentUser.getIdToken(/* forceRefresh */ true)
+      //   .then((idToken: string) => {
+      //     axios.post(
+      //       "/api/add-user-rating",
+      //       {},
+      //       {
+      //         headers: {
+      //           token: idToken,
+      //         },
+      //       }
+      //     );
+      //   })
+
+      //   .catch((e: any) => {
+      //     console.log(e);
+      //   });
     } else {
       handleAuthOptionOpen();
     }

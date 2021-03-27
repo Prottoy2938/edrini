@@ -10,6 +10,8 @@ import {
 } from "../../../data-model/auth-data.db";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import UserDbDataType from "../../../data-model/user-data.db";
+import { isMobile } from "react-device-detect";
 
 if (!firebase.default.apps.length) {
   firebase.default.initializeApp({
@@ -48,7 +50,9 @@ const useProvideAuth = (): UseProvideAuthReturned => {
   const [runningAuth, setRunningAuth] = useState(true); //tracking the state of `onAuthStateChange`. We need to handle some tasks if the authentication process is still running.
   const [emailVerified, setEmailVerified] = useState(true);
   //users info on the database
-  const [basicUserInfoDB, setBasicUserInfoDB] = useState(undefined);
+  const [userInfoDB, setUserInfoDB] = useState<UserDbDataType | undefined>(
+    undefined
+  );
   const [userInfoReqFailed, setUserInfoReqFailed] = useState(false); //checking if getting userInfo from database failed
   const [showLogOutWarning, setShowLogOutWarning] = useState(false);
   //to show a loading bar when the users signs in
@@ -67,11 +71,8 @@ const useProvideAuth = (): UseProvideAuthReturned => {
     setPasswordError("");
   };
 
-  //a function that gets user data from the database and updates `basicUserInfoDB` state
+  //a function that gets user data from the database and updates `userInfoDB` state
   const getUserData = (): void => {
-    console.log(
-      "I'm calling the 'getUserData' function to get user-data from the DB"
-    );
     firebase.default
       .auth()
       .currentUser.getIdToken(/* forceRefresh */ true)
@@ -83,7 +84,7 @@ const useProvideAuth = (): UseProvideAuthReturned => {
             },
           })
           .then((res) => {
-            setBasicUserInfoDB(res.data);
+            setUserInfoDB(res.data);
             setUserInfoReqFailed(false);
           })
           .catch((e: any) => {
@@ -108,7 +109,10 @@ const useProvideAuth = (): UseProvideAuthReturned => {
       .then(({ user }) => {
         setLoginLoadingDispatch({ type: "creatingAccountCP" });
 
-        // getUserData(); //getting user data from the database
+        //getting user data from the database
+        if (!userInfoDB) {
+          getUserData();
+        }
         //if user email is not verified
         if (!user.emailVerified) {
           setEmailVerified(false);
@@ -142,17 +146,7 @@ const useProvideAuth = (): UseProvideAuthReturned => {
   const handleSignUp = (
     email: string,
     password: string,
-    {
-      fullName,
-      birthDate,
-      country,
-      gender,
-    }: {
-      fullName: string;
-      birthDate: Date;
-      country: string;
-      gender: string;
-    }
+    { fullName, birthDate, country, gender }: UserDbDataType
   ): void => {
     setLoginLoadingDispatch({ type: "creatingAccount" });
     clearErrors(); //clearing form input errors
@@ -198,6 +192,10 @@ const useProvideAuth = (): UseProvideAuthReturned => {
                       position: isMobile ? "bottom" : "bottom-right",
                       isClosable: true,
                     });
+                    //if theres no userInfoDB data
+                    if (!userInfoDB) {
+                      getUserData();
+                    }
                   })
                   .catch(() => {
                     console.log("failed created user account on the db");
@@ -226,14 +224,14 @@ const useProvideAuth = (): UseProvideAuthReturned => {
   const handleLogOut = (): void => {
     setShowLogOutWarning(true);
     firebase.default.auth().signOut();
-    setBasicUserInfoDB(undefined); //removing users data from the state
+    setUserInfoDB(undefined); //removing users data from the state
   };
-
+  //runs everytime auth state changes
   const authListener = (): void => {
     firebase.default.auth().onAuthStateChanged((user: any) => {
       if (user) {
         setShowLogOutWarning(false);
-        // getUserData(); //getting user data from the DB, everytime auth state changes
+
         setUser(user);
         setRunningAuth(false);
         setUserInfoReqFailed(false);
@@ -242,9 +240,14 @@ const useProvideAuth = (): UseProvideAuthReturned => {
         if (!user.emailVerified) {
           setEmailVerified(false);
         }
+        //if theres no userInfoDB data
+        if (!userInfoDB) {
+          getUserData();
+        }
       } else {
         setUser(undefined);
         setRunningAuth(false);
+        setUserInfoDB(undefined);
       }
     });
   };
@@ -265,12 +268,12 @@ const useProvideAuth = (): UseProvideAuthReturned => {
     clearErrors,
     emailVerified,
     setEmailVerified,
-    basicUserInfoDB,
+    userInfoDB,
     userInfoReqFailed,
     getUserData,
     showLogOutWarning,
     setShowLogOutWarning,
-    setBasicUserInfoDB,
+    setUserInfoDB,
     setLoginLoadingDispatch,
     loginLoading,
   };

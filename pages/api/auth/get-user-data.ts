@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import verifyIdToken from "../../../src/components/auth-components/auth-functions/verify-token-id";
+import verifyIdToken from "../../../src/auth/verify-token-id";
 import * as admin from "firebase-admin";
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
@@ -25,23 +25,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     host.includes("prottoy2938") ||
     host.includes("edrini-")
   ) {
-    const { fullName, birthDate, country, gender } = req.body;
-    const userInfo = await verifyIdToken(token.toString()); //checking if the user is authenticated
-    const { email, uid } = userInfo;
-    //creating new document in the 'Users' field with the users name
-    await db
+    const { uid } = await verifyIdToken(token.toString()); //checking if the user is authenticated
+
+    //getting user info from the database
+    const doc = await db
       .collection("UsersData")
-      .doc(uid)
-      .set({
-        accountCreated: admin.firestore.Timestamp.now(),
-        fullName: fullName,
-        email: email,
-        userUid: uid,
-        country,
-        gender,
-        birthDate: admin.firestore.Timestamp.fromDate(birthDate),
-      });
-    res.status(201).json("Successful");
+      .doc(uid) //getting user info document by their email
+      .get();
+
+    if (!doc.exists) {
+      res.status(404).send("404 User not found");
+    } else {
+      res.json(doc.data());
+    }
   } else {
     res.status(401).send("You are unauthorized");
   }

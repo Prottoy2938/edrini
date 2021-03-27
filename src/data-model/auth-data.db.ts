@@ -61,12 +61,12 @@ export interface UseProvideAuthReturned {
   clearErrors: () => void;
   emailVerified: boolean;
   setEmailVerified: (state: boolean) => void;
-  basicUserInfoDB: any;
+  userInfoDB: any;
   userInfoReqFailed: boolean;
   getUserData: () => void;
   showLogOutWarning: boolean;
   setShowLogOutWarning: (state: boolean) => void;
-  setBasicUserInfoDB: React.Dispatch<React.SetStateAction<any>>;
+  setUserInfoDB: React.Dispatch<React.SetStateAction<any>>;
   setLoginLoadingDispatch: React.Dispatch<{
     type: loginLoadingActions;
   }>;
