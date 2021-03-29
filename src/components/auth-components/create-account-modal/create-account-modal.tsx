@@ -23,7 +23,7 @@ import { Props, UserInfoTypes } from "./create-account-modal.model";
 import countriesList from "./countries-list";
 import { v4 as uuid } from "uuid";
 import { DayPicker } from "react-day-picker";
-import { ViewIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../auth-functions/auth-functions";
 import { isMobile } from "react-device-detect";
 
@@ -55,13 +55,6 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     if (!runningAuth && user) {
-      toast({
-        title: "Creating Account Successful",
-        status: "warning",
-        duration: 9000,
-        position: isMobile ? "bottom" : "bottom-right",
-        isClosable: true,
-      });
       onClose();
     }
   }, [runningAuth, user]);
@@ -91,6 +84,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
 
   const changeBirthDate = (date: Date) => {
     console.log(date);
+    console.log(typeof date);
     setUserInfo((prevState) => ({
       ...prevState,
       birthDate: date,
@@ -227,7 +221,7 @@ const CreateAccountModal: React.FC<Props> = (props: Props) => {
                     aria-label={
                       showPassword ? "show password" : "hide password"
                     }
-                    icon={<ViewIcon />}
+                    icon={!showPassword ? <ViewOffIcon /> : <ViewIcon />}
                     onClick={togglePassVisibility}
                     h="1.75rem"
                   />

@@ -25,10 +25,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     host.includes("prottoy2938") ||
     host.includes("edrini-")
   ) {
-    const { fullName, birthDate, country, gender } = req.body;
+    const { fullName, birthDateLocaleString, country, gender } = req.body;
     const userInfo = await verifyIdToken(token.toString()); //checking if the user is authenticated
     const { email, uid } = userInfo;
     //creating new document in the 'Users' field with the users name
+    console.log(typeof birthDateLocaleString);
+    console.log(birthDateLocaleString);
     await db
       .collection("UsersData")
       .doc(uid)
@@ -39,8 +41,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         userUid: uid,
         country,
         gender,
-        birthDate: admin.firestore.Timestamp.fromDate(birthDate),
+        birthDate: admin.firestore.Timestamp.fromDate(
+          new Date(birthDateLocaleString)
+        ),
       });
+    console.log("I'm  running here");
+
     res.status(201).json("Successful");
   } else {
     res.status(401).send("You are unauthorized");

@@ -78,7 +78,7 @@ const useProvideAuth = (): UseProvideAuthReturned => {
       .currentUser.getIdToken(/* forceRefresh */ true)
       .then((idToken: string) => {
         axios
-          .get("/api/get-users-data", {
+          .get("/api/get-user-data", {
             headers: {
               token: idToken,
             },
@@ -90,6 +90,14 @@ const useProvideAuth = (): UseProvideAuthReturned => {
           .catch((e: any) => {
             setUserInfoReqFailed(true);
             console.log(e);
+            toast({
+              title: "Something went wrong",
+              description: "Make sure you're signed in properly",
+              status: "error",
+              duration: 9000,
+              position: isMobile ? "bottom" : "bottom-right",
+              isClosable: true,
+            });
           });
       })
 
@@ -172,7 +180,7 @@ const useProvideAuth = (): UseProvideAuthReturned => {
                     "/api/auth/create-new-user",
                     {
                       fullName,
-                      birthDate,
+                      birthDateLocaleString: birthDate.toLocaleDateString(),
                       country,
                       gender,
                     },

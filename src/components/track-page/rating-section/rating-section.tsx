@@ -40,7 +40,9 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     setUserRatingChanged(true);
   };
 
-  const { user, runningAuth, userInfoDB } = useContext(AuthContext);
+  const { user, runningAuth, userInfoDB, getUserData } = useContext(
+    AuthContext
+  );
   const {
     isOpen: signUpModalOpen,
     onOpen: handleSignUpModalOpen,
@@ -59,6 +61,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   const {
     onOpen: handleAuthOptionOpen,
     onClose: handleAuthOptionClose,
+
     isOpen: authOptionOpen,
   } = useDisclosure();
 
@@ -103,25 +106,29 @@ const RatingSection: React.FC<Props> = (props: Props) => {
 
   const handleRatingSubmit = () => {
     if (user) {
-      console.log(userInfoDB);
-      // firebase.default
-      //   .auth()
-      //   .currentUser.getIdToken(/* forceRefresh */ true)
-      //   .then((idToken: string) => {
-      //     axios.post(
-      //       "/api/add-user-rating",
-      //       {},
-      //       {
-      //         headers: {
-      //           token: idToken,
-      //         },
-      //       }
-      //     );
-      //   })
+      if (!userInfoDB) {
+        getUserData();
+      } else {
+        console.log(userInfoDB);
+        // firebase.default
+        //   .auth()
+        //   .currentUser.getIdToken(/* forceRefresh */ true)
+        //   .then((idToken: string) => {
+        //     axios.post(
+        //       "/api/add-user-rating",
+        //       {},
+        //       {
+        //         headers: {
+        //           token: idToken,
+        //         },
+        //       }
+        //     );
+        //   })
 
-      //   .catch((e: any) => {
-      //     console.log(e);
-      //   });
+        //   .catch((e: any) => {
+        //     console.log(e);
+        //   });
+      }
     } else {
       handleAuthOptionOpen();
     }

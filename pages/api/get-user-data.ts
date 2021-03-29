@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import verifyIdToken from "../../../src/auth/verify-token-id";
+import verifyIdToken from "../../src/components/auth-components/auth-functions/verify-token-id";
+
 import * as admin from "firebase-admin";
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
@@ -32,7 +33,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       .collection("UsersData")
       .doc(uid) //getting user info document by their email
       .get();
-
     if (!doc.exists) {
       res.status(404).send("404 User not found");
     } else {
