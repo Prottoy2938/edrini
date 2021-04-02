@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as admin from "firebase-admin";
+import verifyIdToken from "../../src/components/auth-components/auth-functions/verify-token-id";
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
 // console.log(firebasePrivateKey);
@@ -17,10 +18,34 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+function getAge(birthDate: Date) {
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    // Process a POST request
-    const { host } = req.headers;
+    const { host, token } = req.headers;
+    // When the page loads, do a call in the users collection to see if hes already given it rating
+    const {
+      trackID,
+      birthDate,
+      country,
+      spotifyTrackData,
+      gender,
+      changedRating,
+    } = req.body;
+    const age = getAge(birthDate);
+    let { rating, previousRating } = req.body;
+    rating = Number(rating);
+    previousRating = Number(previousRating);
+    const { uid: userUID } = await verifyIdToken(token.toString()); //checking if the user is authenticated
 
     if (
       host === "edrini.xyz" ||
@@ -28,20 +53,62 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       host.includes("prottoy2938") ||
       host.includes("edrini-")
     ) {
-      db.collection("Structure")
-        .doc("Test")
-        .update({
-          [`test.${"1Star"}.Age.${29}`]: admin.firestore.FieldValue.increment(
-            1
-          ),
-          [`test.${"1Star"}.demographic.Syria`]: admin.firestore.FieldValue.increment(
-            1
-          ),
-          [`test.${"3Star"}.demographic.Syria`]: admin.firestore.FieldValue.increment(
-            1
-          ),
-        });
-      res.send("Hello There");
+      //if this is a new rating, not a modifiedRating
+      if (!changedRating) {
+        await db
+          .collection("trackData")
+          .doc(trackID)
+          .update({
+            [`ratings.votes.${`${rating}star`}.age.${age}`]: admin.firestore.FieldValue.increment(
+              1
+            ),
+            [`ratings.votes.${`${rating}star`}.country.${country}`]: admin.firestore.FieldValue.increment(
+              1
+            ),
+            [`ratings.votes.${`${rating}star`}.gender.${gender}`]: admin.firestore.FieldValue.increment(
+              1
+            ),
+            [`ratings.votes.${`${rating}star`}.totalVotes`]: admin.firestore.FieldValue.increment(
+              rating
+            ),
+            totalRatings: admin.firestore.FieldValue.increment(rating),
+            totalVotes: admin.firestore.FieldValue.increment(1),
+          });
+        await db
+          .collection("UsersData")
+          .doc(userUID)
+          .collection("trackRatingGiven")
+          .doc(trackID)
+          .set({
+            rating,
+            when: admin.firestore.Timestamp.now(),
+            spotifyTrackData,
+            trackID,
+          });
+      } else {
+        const ratingValChanged = rating - previousRating;
+
+        if (ratingValChanged !== 0) {
+          await db
+            .collection("trackData")
+            .doc(trackID)
+            .update({
+              totalRatings: admin.firestore.FieldValue.increment(
+                ratingValChanged
+              ),
+            });
+          await db
+            .collection("UsersData")
+            .doc(userUID)
+            .collection("trackRatings")
+            .doc(trackID)
+            .update({
+              rating,
+              when: admin.firestore.Timestamp.now(),
+            });
+        }
+      }
+      res.status(200).send("successful");
     } else {
       res.status(401).send("Cannot get");
     }

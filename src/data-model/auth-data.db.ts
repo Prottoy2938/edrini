@@ -1,3 +1,5 @@
+import userInfoDBType from "./user-data.db";
+
 export interface AuthProviderProps {
   children: any;
 }
@@ -61,7 +63,7 @@ export interface UseProvideAuthReturned {
   clearErrors: () => void;
   emailVerified: boolean;
   setEmailVerified: (state: boolean) => void;
-  userInfoDB: any;
+  userInfoDB: userInfoDBType;
   userInfoReqFailed: boolean;
   getUserData: () => void;
   showLogOutWarning: boolean;

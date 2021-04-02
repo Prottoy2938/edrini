@@ -90,14 +90,6 @@ const useProvideAuth = (): UseProvideAuthReturned => {
           .catch((e: any) => {
             setUserInfoReqFailed(true);
             console.log(e);
-            toast({
-              title: "Something went wrong",
-              description: "Make sure you're signed in properly",
-              status: "error",
-              duration: 9000,
-              position: isMobile ? "bottom" : "bottom-right",
-              isClosable: true,
-            });
           });
       })
 

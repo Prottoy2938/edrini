@@ -13,6 +13,7 @@ import {
   PopoverCloseButton,
   PopoverArrow,
   ButtonGroup,
+  useToast,
   Spinner,
 } from "@chakra-ui/react";
 import Slider from "rc-slider";
@@ -23,6 +24,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import * as firebase from "firebase/app";
 import "firebase/auth";
+import { isMobile } from "react-device-detect";
 
 const CreateAccountModal = dynamic(
   () =>
@@ -33,11 +35,10 @@ const LoginModal = dynamic(
 );
 
 const RatingSection: React.FC<Props> = (props: Props) => {
-  const { userRating, setUserRating } = props;
-  const [userRatingChanged, setUserRatingChanged] = useState(false);
+  const { userRating, setUserRating, trackData } = props;
+
   const handleRatingChange = (val) => {
     setUserRating(Number(val));
-    setUserRatingChanged(true);
   };
 
   const { user, runningAuth, userInfoDB, getUserData } = useContext(
@@ -57,6 +58,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
 
   const authInitialFocusRef = useRef();
   const authEndFocusRef = useRef();
+  const toast = useToast();
 
   const {
     onOpen: handleAuthOptionOpen,
@@ -109,25 +111,40 @@ const RatingSection: React.FC<Props> = (props: Props) => {
       if (!userInfoDB) {
         getUserData();
       } else {
-        console.log(userInfoDB);
-        // firebase.default
-        //   .auth()
-        //   .currentUser.getIdToken(/* forceRefresh */ true)
-        //   .then((idToken: string) => {
-        //     axios.post(
-        //       "/api/add-user-rating",
-        //       {},
-        //       {
-        //         headers: {
-        //           token: idToken,
-        //         },
-        //       }
-        //     );
-        //   })
+        firebase.default
+          .auth()
+          .currentUser.getIdToken(/* forceRefresh */ true)
+          .then((idToken: string) => {
+            //not passing down any user information except the users token, will use that in the backend api to get users info
+            axios.post(
+              "/api/add-user-rating",
+              {
+                trackID: trackData.spotifyData.id,
+                birthDate: userInfoDB.birthDate,
 
-        //   .catch((e: any) => {
-        //     console.log(e);
-        //   });
+                country: userInfoDB.country,
+                gender: userInfoDB.gender,
+                spotifyTrackData: trackData,
+                // changedRating
+              },
+              {
+                headers: {
+                  token: idToken,
+                },
+              }
+            );
+          })
+          .catch((e) => {
+            toast({
+              title: "Something went wrong",
+              description:
+                "Couldn't submit your rating. Try again, if this problem persists,  contact us.",
+              status: "error",
+              duration: 9000,
+              position: isMobile ? "bottom" : "bottom-right",
+              isClosable: true,
+            });
+          });
       }
     } else {
       handleAuthOptionOpen();

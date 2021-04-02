@@ -80,6 +80,7 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
             <RatingSection
               userRating={userRating}
               setUserRating={setUserRating}
+              trackData={trackData}
             />
           </Box>
           <TrackInfo trackData={trackData} />
