@@ -92,7 +92,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         });
       }
 
-      //TODO: Do the same in the next return, remember we do two returns here
       //if we get nothing out of the database, then calling the spotify api to get related artist data
       if (relatedTracksData.length < 4) {
         try {
@@ -104,10 +103,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           });
           spotifyApi.setAccessToken(token);
 
-          //getting artist's top tracks on 'GB' / England
+          //getting artist's top tracks on USA
           const res = await spotifyApi.getArtistTopTracks(
             trackData.spotifyData.artists[0].id,
-            "GB"
+            "US"
           );
 
           const modifiedTracks = res.body.tracks.map((track) => {
@@ -152,7 +151,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           errorCode: 0,
         },
       };
-    } else {
+    }
+    // If the document doesn't exists, then getting it from the spotify database
+    else {
       try {
         const token = await getToken();
         const spotifyApi = new SpotifyWebApi({

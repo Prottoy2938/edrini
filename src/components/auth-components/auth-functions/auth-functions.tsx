@@ -84,7 +84,10 @@ const useProvideAuth = (): UseProvideAuthReturned => {
             },
           })
           .then((res) => {
-            setUserInfoDB(res.data);
+            setUserInfoDB({
+              ...res.data,
+              birthDate: new Date(res.data.birthDate._seconds * 1000),
+            });
             setUserInfoReqFailed(false);
           })
           .catch((e: any) => {

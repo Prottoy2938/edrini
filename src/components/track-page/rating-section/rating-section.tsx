@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   Box,
   chakra,
@@ -37,8 +37,14 @@ const LoginModal = dynamic(
 const RatingSection: React.FC<Props> = (props: Props) => {
   const { userRating, setUserRating, trackData } = props;
 
+  const [previousRatingStatus, setPreviousRatingStatus] = useState({
+    givenBefore: false,
+    loading: true,
+    previousRating: null,
+  });
+
   const handleRatingChange = (val) => {
-    setUserRating(Number(val));
+    setUserRating(Number(val) / 10);
   };
 
   const { user, runningAuth, userInfoDB, getUserData } = useContext(
@@ -106,7 +112,53 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     100: styledNumber(100, "#ff006f"),
   };
 
+  useEffect(() => {
+    if (user) {
+      firebase.default
+        .auth()
+        .currentUser.getIdToken(/* forceRefresh */ true)
+        .then((idToken: string) => {
+          //not passing down any user information except the users token, will use that in the backend api to get users info
+          axios
+            .post(
+              "/api/get-user-track-rating-history",
+              { trackID: trackData.spotifyData.id },
+              {
+                headers: {
+                  token: idToken,
+                },
+              }
+            )
+            .then((res) => {
+              console.log(res);
+              const { givenBefore, previousRating } = res.data;
+              setPreviousRatingStatus((prevState) => ({
+                ...prevState,
+                loading: false,
+                givenBefore,
+                previousRating,
+              }));
+            })
+            .catch((e) => {
+              setPreviousRatingStatus((prevState) => ({
+                ...prevState,
+                loading: false,
+              }));
+              console.error(e);
+            });
+        })
+        .catch((e) => {
+          setPreviousRatingStatus((prevState) => ({
+            ...prevState,
+            loading: false,
+          }));
+          console.error(e);
+        });
+    }
+  }, [user]);
+
   const handleRatingSubmit = () => {
+    console.log(userRating);
     if (user) {
       if (!userInfoDB) {
         getUserData();
@@ -119,13 +171,14 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             axios.post(
               "/api/add-user-rating",
               {
+                rating: userRating,
                 trackID: trackData.spotifyData.id,
-                birthDate: userInfoDB.birthDate,
-
+                birthDate: userInfoDB.birthDate.toString(),
                 country: userInfoDB.country,
                 gender: userInfoDB.gender,
-                spotifyTrackData: trackData,
-                // changedRating
+                spotifyTrackData: trackData.spotifyData,
+                givenBefore: previousRatingStatus.givenBefore,
+                previousRating: previousRatingStatus.previousRating,
               },
               {
                 headers: {
@@ -135,10 +188,11 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             );
           })
           .catch((e) => {
+            console.error(e);
             toast({
               title: "Something went wrong",
               description:
-                "Couldn't submit your rating. Try again, if this problem persists,  contact us.",
+                "Couldn't submit your rating, try again. If this problem persists,  contact us.",
               status: "error",
               duration: 9000,
               position: isMobile ? "bottom" : "bottom-right",
@@ -156,14 +210,25 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         {/* {
       // transform: scale(1.5) 
     // } */}
-        <Slider
-          dots
-          min={0}
-          marks={marks}
-          step={20}
-          onChange={handleRatingChange}
-          defaultValue={20}
-        />
+        {previousRatingStatus.loading && previousRatingStatus.givenBefore ? (
+          <Slider
+            dots
+            min={0}
+            marks={marks}
+            step={20}
+            onChange={handleRatingChange}
+            defaultValue={previousRatingStatus.previousRating * 10}
+          />
+        ) : (
+          <Slider
+            dots
+            min={0}
+            marks={marks}
+            step={20}
+            onChange={handleRatingChange}
+            defaultValue={40}
+          />
+        )}
       </Box>
       <Box>
         <Box textAlign="right" mt={12}>
