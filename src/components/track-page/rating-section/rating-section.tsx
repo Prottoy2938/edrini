@@ -119,6 +119,17 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   };
 
   useEffect(() => {
+    console.log(
+      !previousRatingStatus.loading && previousRatingStatus.givenBefore
+    );
+    console.log(
+      "rating is: ",
+      previousRatingStatus.previousRating,
+      previousRatingStatus.previousRating * 10
+    );
+  }, [previousRatingStatus]);
+
+  useEffect(() => {
     if (user) {
       firebase.default
         .auth()
@@ -137,11 +148,13 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             )
             .then((res) => {
               const { givenBefore, previousRating } = res.data;
+
               setPreviousRatingStatus({
                 givenBefore,
                 previousRating,
                 loading: false,
               });
+              setUserRating(previousRating);
             })
             .catch((e) => {
               setPreviousRatingStatus((prevState) => ({
@@ -221,7 +234,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         {/* {
       // transform: scale(1.5) 
     // } */}
-        {!previousRatingStatus.loading && previousRatingStatus.givenBefore ? (
+        {/* {!previousRatingStatus.loading && previousRatingStatus.givenBefore ? (
           <Slider
             dots
             min={0}
@@ -229,6 +242,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             step={20}
             onChange={handleRatingChange}
             defaultValue={previousRatingStatus.previousRating * 10}
+            key={Date.now()}
           />
         ) : (
           <Slider
@@ -238,8 +252,29 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             step={20}
             onChange={handleRatingChange}
             defaultValue={40}
+            key={Date.now()}
           />
-        )}
+        )} */}
+        {/* {!previousRatingStatus.loading && previousRatingStatus.givenBefore && (
+          <Slider
+            dots
+            min={0}
+            marks={marks}
+            step={20}
+            onChange={handleRatingChange}
+            defaultValue={previousRatingStatus.previousRating * 10}
+          />
+        )} */}
+
+        <Slider
+          dots
+          min={0}
+          marks={marks}
+          step={20}
+          onChange={handleRatingChange}
+          defaultValue={userRating ? userRating * 10 : 40}
+          key={Date.now()}
+        />
       </Box>
       <Box>
         <Box textAlign="right" mt={12}>
