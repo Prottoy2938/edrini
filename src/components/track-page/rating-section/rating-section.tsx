@@ -85,7 +85,13 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   };
 
   const colorDependClass =
-    userRating <= 3 ? "r-3" : userRating <= 7 ? "r-8" : "r-10";
+    userRating <= 2
+      ? "r-2"
+      : userRating <= 5
+      ? "r-5"
+      : userRating <= 8
+      ? "r-8"
+      : "r-10";
 
   const styledNumber = (posNum: number, color: string) => {
     return userRating === posNum / 10
@@ -102,14 +108,14 @@ const RatingSection: React.FC<Props> = (props: Props) => {
     0: styledNumber(0, "#559945"),
     10: styledNumber(10, "#559945"),
     20: styledNumber(20, "#559945"),
-    30: styledNumber(30, "#559945"),
+    30: styledNumber(30, "#ffa200"),
     40: styledNumber(40, "#ffa200"),
     50: styledNumber(50, "#ffa200"),
-    60: styledNumber(60, "#ffa200"),
-    70: styledNumber(70, "#ffa200"),
+    60: styledNumber(60, "#ff006f"),
+    70: styledNumber(70, "#ff006f"),
     80: styledNumber(80, "#ff006f"),
-    90: styledNumber(90, "#ff006f"),
-    100: styledNumber(100, "#ff006f"),
+    90: styledNumber(90, "#ff002b"),
+    100: styledNumber(100, "#ff002b"),
   };
 
   useEffect(() => {
