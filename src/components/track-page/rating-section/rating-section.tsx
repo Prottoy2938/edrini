@@ -85,10 +85,10 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   };
 
   const colorDependClass =
-    userRating <= 30 ? "r-3" : userRating <= 70 ? "r-8" : "r-10";
+    userRating <= 3 ? "r-3" : userRating <= 7 ? "r-8" : "r-10";
 
   const styledNumber = (posNum: number, color: string) => {
-    return userRating === posNum
+    return userRating === posNum / 10
       ? {
           style: {
             color,
@@ -130,14 +130,12 @@ const RatingSection: React.FC<Props> = (props: Props) => {
               }
             )
             .then((res) => {
-              console.log(res);
               const { givenBefore, previousRating } = res.data;
-              setPreviousRatingStatus((prevState) => ({
-                ...prevState,
-                loading: false,
+              setPreviousRatingStatus({
                 givenBefore,
                 previousRating,
-              }));
+                loading: false,
+              });
             })
             .catch((e) => {
               setPreviousRatingStatus((prevState) => ({
@@ -158,7 +156,6 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   }, [user]);
 
   const handleRatingSubmit = () => {
-    console.log(userRating);
     if (user) {
       if (!userInfoDB) {
         getUserData();
@@ -177,8 +174,6 @@ const RatingSection: React.FC<Props> = (props: Props) => {
                 country: userInfoDB.country,
                 gender: userInfoDB.gender,
                 spotifyTrackData: trackData.spotifyData,
-                givenBefore: previousRatingStatus.givenBefore,
-                previousRating: previousRatingStatus.previousRating,
               },
               {
                 headers: {
@@ -187,6 +182,16 @@ const RatingSection: React.FC<Props> = (props: Props) => {
               }
             );
           })
+          .then(() => {
+            toast({
+              description: "Your rating submitted successfully.",
+              status: "success",
+              duration: 4000,
+              position: isMobile ? "bottom" : "bottom-right",
+              isClosable: true,
+            });
+          })
+
           .catch((e) => {
             console.error(e);
             toast({
@@ -210,7 +215,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
         {/* {
       // transform: scale(1.5) 
     // } */}
-        {previousRatingStatus.loading && previousRatingStatus.givenBefore ? (
+        {!previousRatingStatus.loading && previousRatingStatus.givenBefore ? (
           <Slider
             dots
             min={0}

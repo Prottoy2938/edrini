@@ -33,19 +33,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const { host, token } = req.headers;
     // When the page loads, do a call in the users collection to see if hes already given it rating
-    const {
-      trackID,
-      birthDate,
-      country,
-      spotifyTrackData,
-      gender,
-      givenBefore,
-    } = req.body;
+    const { trackID, birthDate, country, spotifyTrackData, gender } = req.body;
 
     const age = getAge(birthDate);
-    let { rating, previousRating } = req.body;
+    let { rating } = req.body;
     rating = Number(rating);
-    previousRating = Number(previousRating);
     const { uid: userUID } = await verifyIdToken(token.toString()); //checking if the user is authenticated
 
     if (
@@ -55,7 +47,72 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       host.includes("edrini-")
     ) {
       if (rating <= 10 && rating >= 0) {
-        if (!givenBefore) {
+        // checking user's previous rating on the here
+        const givenBefore = await db
+          .collection("UsersData")
+          .doc(userUID)
+          .collection("trackRatingGiven")
+          .doc(trackID)
+          .get();
+
+        if (givenBefore.exists) {
+          //if the user already given it a rating before
+          const { rating: previousRating } = givenBefore.data();
+
+          const ratingChangedVal = rating - previousRating;
+
+          if (ratingChangedVal !== 0) {
+            await db
+              .collection("trackData")
+              .doc(trackID)
+              .update({
+                [`ratings.totalRatings`]: admin.firestore.FieldValue.increment(
+                  ratingChangedVal
+                ),
+                // Removing data from previous rating position
+                [`ratings.votes.${`${previousRating}star`}.age.${age}`]: admin.firestore.FieldValue.increment(
+                  -1
+                ),
+                [`ratings.votes.${`${previousRating}star`}.country.${country}`]: admin.firestore.FieldValue.increment(
+                  -1
+                ),
+                [`ratings.votes.${`${previousRating}star`}.gender.${gender}`]: admin.firestore.FieldValue.increment(
+                  -1
+                ),
+                [`ratings.votes.${`${previousRating}star`}.totalVotes`]: admin.firestore.FieldValue.increment(
+                  -1
+                ),
+                [`ratings.votes.${`${previousRating}star`}.totalRatings`]: admin.firestore.FieldValue.increment(
+                  -previousRating
+                ),
+                //adding data to the new rating position
+                [`ratings.votes.${`${rating}star`}.age.${age}`]: admin.firestore.FieldValue.increment(
+                  1
+                ),
+                [`ratings.votes.${`${rating}star`}.country.${country}`]: admin.firestore.FieldValue.increment(
+                  1
+                ),
+                [`ratings.votes.${`${rating}star`}.gender.${gender}`]: admin.firestore.FieldValue.increment(
+                  1
+                ),
+                [`ratings.votes.${`${rating}star`}.totalVotes`]: admin.firestore.FieldValue.increment(
+                  1
+                ),
+                [`ratings.votes.${`${rating}star`}.totalRatings`]: admin.firestore.FieldValue.increment(
+                  rating
+                ),
+              });
+            await db
+              .collection("UsersData")
+              .doc(userUID)
+              .collection("trackRatingGiven")
+              .doc(trackID)
+              .update({
+                rating,
+                when: admin.firestore.Timestamp.now(),
+              });
+          }
+        } else {
           //if this is a new rating, not a modifiedRating
           await db
             .collection("trackData")
@@ -92,28 +149,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               spotifyTrackData,
               trackID,
             });
-        } else {
-          const ratingValChanged = rating - previousRating;
-
-          if (ratingValChanged !== 0) {
-            await db
-              .collection("trackData")
-              .doc(trackID)
-              .update({
-                totalRatings: admin.firestore.FieldValue.increment(
-                  ratingValChanged
-                ),
-              });
-            await db
-              .collection("UsersData")
-              .doc(userUID)
-              .collection("trackRatings")
-              .doc(trackID)
-              .update({
-                rating,
-                when: admin.firestore.Timestamp.now(),
-              });
-          }
         }
         res.status(200).send("successful");
       } else {
