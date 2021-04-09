@@ -8,9 +8,17 @@ import RatingSection from "../rating-section/rating-section";
 import RelatedTrackCarousel from "../related-track-carousel/related-track-carousel";
 
 const TrackPageAssemble: React.FC<Props> = (props: Props) => {
+  const { trackData, relatedTracksData } = props;
+  const ratingInfoAvailable = Boolean(trackData.ratings);
   const [userRating, setUserRating] = useState(4);
 
-  const { trackData, relatedTracksData } = props;
+  const [trackTotalVotes, setTrackTotalVotes] = useState(
+    ratingInfoAvailable ? trackData.ratings.totalVotes : 0
+  );
+  const [trackRating, setTrackRating] = useState(
+    ratingInfoAvailable ? trackData.ratings.totalRatings / trackTotalVotes : 0
+  );
+
   const lgImg = trackData.spotifyData.album.images[0].url;
   const mdImg = trackData.spotifyData.album.images[1].url;
   const smImg = trackData.spotifyData.album.images[2].url;
@@ -57,13 +65,19 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
           <Box display="table" m="100px auto">
             {" "}
             <Stack isInline>
-              <Heading>4.3</Heading>{" "}
+              <Heading>
+                {isFinite(trackRating) && typeof trackRating === "number"
+                  ? trackRating
+                  : 0}
+              </Heading>{" "}
               <Heading size="xs" mt="20px !important" color="grey.300">
                 / 10
               </Heading>
             </Stack>
             <Text textAlign="center" mt={2} fontWeight="200">
-              200
+              {isFinite(trackTotalVotes) && typeof trackTotalVotes === "number"
+                ? trackTotalVotes
+                : 0}
             </Text>
           </Box>
           <Box mb={20}>

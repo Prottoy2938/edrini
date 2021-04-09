@@ -231,41 +231,6 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   return (
     <Box mt={6}>
       <Box className={colorDependClass}>
-        {/* {
-      // transform: scale(1.5) 
-    // } */}
-        {/* {!previousRatingStatus.loading && previousRatingStatus.givenBefore ? (
-          <Slider
-            dots
-            min={0}
-            marks={marks}
-            step={20}
-            onChange={handleRatingChange}
-            defaultValue={previousRatingStatus.previousRating * 10}
-            key={Date.now()}
-          />
-        ) : (
-          <Slider
-            dots
-            min={0}
-            marks={marks}
-            step={20}
-            onChange={handleRatingChange}
-            defaultValue={40}
-            key={Date.now()}
-          />
-        )} */}
-        {/* {!previousRatingStatus.loading && previousRatingStatus.givenBefore && (
-          <Slider
-            dots
-            min={0}
-            marks={marks}
-            step={20}
-            onChange={handleRatingChange}
-            defaultValue={previousRatingStatus.previousRating * 10}
-          />
-        )} */}
-
         <Slider
           dots
           min={0}
