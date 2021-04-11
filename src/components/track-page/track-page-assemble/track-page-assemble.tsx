@@ -9,6 +9,7 @@ import RelatedTrackCarousel from "../related-track-carousel/related-track-carous
 
 const TrackPageAssemble: React.FC<Props> = (props: Props) => {
   const { trackData, relatedTracksData } = props;
+  //if the track data has gotten any rating yet. It it hadn't, then it would be null
   const ratingInfoAvailable = Boolean(trackData.ratings);
   const [userRating, setUserRating] = useState(4);
 
@@ -41,28 +42,32 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
           m="0 auto"
         />
         <Box pl="200px" m="0 auto" mt={8}>
-          <Heading>{name}</Heading>
-          <Heading mt={2} as="h3" size="md">
-            By{" "}
+          <Heading fontSize="3xl" lineHeight="10">
+            {name}
+          </Heading>
+          <Heading mt={7} lineHeight="8" as="h3" size="sm">
+            <span style={{ color: "#CBD5E0" }}>by</span>{" "}
             {artistNames.map((artist, i) => (
-              <chakra.a
-                key={uuid()}
-                _hover={{
-                  color: "#dbdbdb",
-                  textDecor: "underline",
-                }}
-                href={`/artist?i=${artist.id}`}
-                title={`${artist.name}'s page`}
-              >
-                {" "}
-                {artist.name}{" "}
+              <>
+                <chakra.a
+                  key={uuid()}
+                  _hover={{
+                    color: "#d1d1d1",
+                    textDecor: "underline",
+                  }}
+                  href={`/artist?i=${artist.id}`}
+                  title={`${artist.name}'s page`}
+                >
+                  {" "}
+                  {artist.name}
+                </chakra.a>
                 {artistNames.length > 1 || i + 1 !== artistNames.length
                   ? ","
                   : ""}{" "}
-              </chakra.a>
+              </>
             ))}
           </Heading>
-          <Box display="table" m="100px auto">
+          <Box display="table" m="100px auto" transform="scale(1.38)">
             {" "}
             <Stack isInline>
               <Heading>
@@ -95,6 +100,9 @@ const TrackPageAssemble: React.FC<Props> = (props: Props) => {
               userRating={userRating}
               setUserRating={setUserRating}
               trackData={trackData}
+              setTrackTotalVotes={setTrackTotalVotes}
+              setTrackRating={setTrackRating}
+              trackTotalVotes={trackTotalVotes}
             />
           </Box>
           <TrackInfo trackData={trackData} />

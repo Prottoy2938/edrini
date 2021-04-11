@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Carousel from "react-multi-carousel";
 import { v4 as uuid } from "uuid";
 import Props from "./related-tracks-carousel.model";
@@ -41,12 +41,7 @@ const RelatedTrackCarousel: React.FC<Props> = (props: Props) => {
     <Box w="90%" m="100px auto">
       <Carousel partialVisible responsive={responsive} draggable={false}>
         {relatedTracksData.map((trackData) => {
-          return (
-            <CarouselCard
-              key={trackData.spotifyData.id}
-              trackData={trackData}
-            />
-          );
+          return <CarouselCard key={uuid()} trackData={trackData} />;
         })}
       </Carousel>
     </Box>

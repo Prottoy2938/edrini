@@ -35,9 +35,19 @@ const LoginModal = dynamic(
 );
 
 const RatingSection: React.FC<Props> = (props: Props) => {
-  const { userRating, setUserRating, trackData } = props;
+  const {
+    userRating,
+    setUserRating,
+    trackData,
+    setTrackTotalVotes,
+    setTrackRating,
+    trackTotalVotes,
+  } = props;
 
-  const [previousRatingStatus, setPreviousRatingStatus] = useState({
+  const [
+    previousSubmittedRatingStatus,
+    setPreviousSubmittedRatingStatus,
+  ] = useState({
     givenBefore: false,
     loading: true,
     previousRating: null,
@@ -119,17 +129,6 @@ const RatingSection: React.FC<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    console.log(
-      !previousRatingStatus.loading && previousRatingStatus.givenBefore
-    );
-    console.log(
-      "rating is: ",
-      previousRatingStatus.previousRating,
-      previousRatingStatus.previousRating * 10
-    );
-  }, [previousRatingStatus]);
-
-  useEffect(() => {
     if (user) {
       firebase.default
         .auth()
@@ -149,7 +148,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             .then((res) => {
               const { givenBefore, previousRating } = res.data;
 
-              setPreviousRatingStatus({
+              setPreviousSubmittedRatingStatus({
                 givenBefore,
                 previousRating,
                 loading: false,
@@ -157,7 +156,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
               setUserRating(previousRating);
             })
             .catch((e) => {
-              setPreviousRatingStatus((prevState) => ({
+              setPreviousSubmittedRatingStatus((prevState) => ({
                 ...prevState,
                 loading: false,
               }));
@@ -165,7 +164,7 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             });
         })
         .catch((e) => {
-          setPreviousRatingStatus((prevState) => ({
+          setPreviousSubmittedRatingStatus((prevState) => ({
             ...prevState,
             loading: false,
           }));
@@ -202,12 +201,32 @@ const RatingSection: React.FC<Props> = (props: Props) => {
             );
           })
           .then(() => {
+            if (previousSubmittedRatingStatus.givenBefore) {
+              setTrackRating(
+                (prevRating) =>
+                  prevRating +
+                  (userRating - previousSubmittedRatingStatus.previousRating) /
+                    trackTotalVotes
+              );
+            } else {
+              setTrackRating(
+                (prevRating) => (prevRating + -userRating) / trackTotalVotes + 1
+              );
+              setTrackTotalVotes((prevVotes) => prevVotes + 1);
+            }
+
             toast({
               description: "Your rating submitted successfully.",
               status: "success",
               duration: 4000,
               position: isMobile ? "bottom" : "bottom-right",
               isClosable: true,
+            });
+            //## Have to do this at the very end [if we're using 'previousSubmittedRatingStatus' on this block]
+            setPreviousSubmittedRatingStatus({
+              previousRating: userRating,
+              loading: false,
+              givenBefore: true,
             });
           })
 
